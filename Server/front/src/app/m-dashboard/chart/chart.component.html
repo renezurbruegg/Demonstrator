@@ -1,0 +1,55 @@
+<div class="card  border-1 rounded-3 m-3">
+  <div class="card-body card-block text-center">
+
+
+    <div class="card-title" style="height:40px">
+      <div class="row">
+
+        <div class="col-sm-7" style="text-align:left; margin-top:8px">
+          <h5 class="">{{chartObject.name}}</h5>
+        </div>
+
+
+        <div class="col-sm-5" style="text-align:right">
+          <button style="margin-right:2px" type="button" (click)="clear()" class="btn btn-primary">
+
+            <i class="fas fa-sync-alt"></i>
+
+          </button>
+
+          <button type="button" (click)="togglePlay()" class="btn btn-primary">
+            <i class="fas " [ngClass]="{'fa-pause' : !paused, 'fa-play' : paused}">
+            </i>
+          </button>
+
+          <div class="btn-group dropright">
+
+            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="sr-only">Toggle Dropright</span>
+              <i class="fas fa-ellipsis-v ">
+              </i>
+            </button>
+            <div class="dropdown-menu">
+              <h6 class="dropdown-header">Actions</h6>
+              <a class="dropdown-item" (click)="exportImage()" href="#">Export as Image</a>
+              <a class="dropdown-item" (click)="exportCsv()" href="#">Export as CSV </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="chart-container" style="position: relative;">
+      <canvas id="{{chartObject.chartId}}" width="2" height="1">{{ chartLine }}</canvas>
+    </div>
+
+    <div class="values" style="position:absolute; bottom:10px; margin-left: auto; margin-right: auto; left:0px; right:0px">
+      <div class="col-sm-12" style="text-align:center; margin-left: auto; margin-right: auto;">
+        <span *ngFor="let dataset of chartObject.datasets">
+          <b> {{dataset.name}} </b> : {{dataset.chartDataset.currValue}} {{dataset.unit}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

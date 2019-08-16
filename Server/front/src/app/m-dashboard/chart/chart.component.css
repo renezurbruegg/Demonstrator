@@ -1,0 +1,24 @@
+@media screen and (max-width: 850px) {
+  .card-body {
+    max-width: 85vw;
+    margin-left: 6vw;
+  }
+}
+
+.chart-container {
+  position: relative;
+  margin: none;
+  height: 70%;
+  width: 100%;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.dropdown-toggle {
+  margin-left: 2px;
+  background-color: white;
+  color: gray;
+  border: 0px;
+}

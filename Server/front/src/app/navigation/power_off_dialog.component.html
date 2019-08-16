@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>Power Off</h1>
+<div mat-dialog-content style="padding-bottom:5px;">
+
+  Are you sure you want to Power off the device ?
+</div>
+<div mat-dialog-actions class="button-bar">
+  <button mat-button mat-raised-button (click)="onNoClick()" style="width:45%">Cancel</button>
+  <button mat-button mat-raised-button (click)="onYesClick()" style="width:45%" cdkFocusInitial>Power Off</button>
+</div>

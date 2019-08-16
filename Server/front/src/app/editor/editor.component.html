@@ -1,0 +1,8 @@
+<div class="container">
+  <div class="row" style="padding:5px;">
+    <json-editor class="col-md-12" [options]="options" [data]="data"></json-editor>
+  </div>
+  <div class="row float-right" style="padding: 5px;">
+    <button class="btn btn-primary" (click)="onSavePressed()" [disabled]="!editor.isValidJson()"> Save </button>
+  </div>
+</div>

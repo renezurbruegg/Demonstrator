@@ -1,0 +1,11 @@
+<div class="container">
+
+  <h2> General </h2>
+  brightness:
+
+  <mv-slider class="brightness-slider" [(value)]="configObject.brightness" [min]="0" [max]="255" [step]="1">
+  </mv-slider>
+
+  <button type="submit" (click)="submit()" class="btn btn-success">Submit</button>
+
+</div>

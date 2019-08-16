@@ -1,0 +1,56 @@
+.big-checkbox {
+  width: 20px;
+  height: 20px;
+  left: -3px
+}
+
+.chart-spacer {
+  height: 5px;
+}
+
+.chart-selection {
+  height: 35px;
+}
+
+.card-header {
+  padding-bottom: 0px;
+}
+
+.card-header label {
+  margin-top: 5px;
+}
+
+.card-header .form-group {
+  margin-bottom: 0px;
+}
+
+.nopad {
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
+.btn-slim {
+  margin: 1px !important;
+}
+
+.dataset-btn {
+  margin-top: 20px;
+}
+
+.btn-label {
+  position: relative;
+  left: -12px;
+  display: inline-block;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px 0 0 3px;
+}
+
+.btn-labeled {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.btn {
+  margin-bottom: 10px;
+}

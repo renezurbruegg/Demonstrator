@@ -1,0 +1,209 @@
+<div class="mx-auto">
+  <div>
+    <div class="container" style="background-color:fefefe">
+
+
+      <div class="chart-spacer"> </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="form-group row">
+
+            <label class="col-sm-5">
+              <h4>Chart Settings</h4>
+            </label>
+
+            <label class="col-sm-2" for="chartsel">
+              Chart:
+            </label>
+            <select class="form-control col-sm-2 chart-selection" id="chartsel" required (change)="updateSelectedDevice()" [(ngModel)]="selectedDeviceNumb" name="device">
+              <option *ngFor="let chart of chartObjects; let i = index" [value]="i">{{chart.name}}</option>
+            </select>
+            <div class="col-sm-3">
+              <button class="btn-slim float-right btn btn-success dataset-btn d-flex justify-content-center align-content-between" (click)="addChart()">
+                <mat-icon class="mr-1" style="height:20px; width:20px;">
+                  add
+                </mat-icon> Add Chart
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="card-body">
+
+
+
+          <div class="container">
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="chartname">Chart Name </label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control " id="chartname" [(ngModel)]="selectedObject.name" name="name">
+              </div>
+              <label class="col-sm-2 col-form-label" for="maxValues">Values in Graph </label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control " id="maxValues" [(ngModel)]="selectedObject.maxValues" name="maxValues">
+              </div>
+            </div>
+
+            <h4> Axes </h4>
+
+            <div class="form-group row " *ngFor="let axis of selectedObject.axes; let i = index;">
+              <label class="col-sm-2 col-form-label" for="chartname">Axis ID </label>
+              <div class="col-sm-3">
+                <input type="text" class="form-control " id="chartname" [(ngModel)]="axis.id" name="name">
+              </div>
+              <label class="col-sm-2 col-form-label" for="maxValues">Position</label>
+              <div class="col-sm-2">
+                <select class="form-control" id="device" name="device" [(ngModel)]="axis.position">
+                  <option [value]="'left'">Left</option>
+                  <option [value]="'right'">Right</option>
+
+                </select>
+              </div>
+              <div class="col-sm-1">
+                <button [disabled]="chartObjects.length <= 1" class="btn-slim float-right btn btn-danger dataset-btn d-flex justify-content-center align-content-between" (click)="deleteAxis(axis)">
+                  <mat-icon class="mr-1" style="height:20px; width:20px;">
+                    delete
+                  </mat-icon>
+                </button>
+              </div>
+              <div *ngIf="i == (selectedObject.axes.length - 1)" class="col-sm-1">
+                <button class="btn-slim float-right btn btn-success dataset-btn d-flex justify-content-center align-content-between" (click)="addAxis()">
+                  <mat-icon class="mr-1" style="height:20px; width:20px;">
+                    add
+                  </mat-icon>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="selectedObject.axes == undefined" class="col-sm-1">
+              <button class="btn-slim float-right btn btn-success dataset-btn d-flex justify-content-center align-content-between" (click)="addAxis()">
+                <mat-icon class="mr-1" style="height:20px; width:20px;">
+                  add
+                </mat-icon>
+              </button>
+            </div>
+
+
+            <h4> Datasets </h4>
+
+
+            <mat-accordion>
+              <mat-expansion-panel *ngFor="let dataset of selectedObject.datasets">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{dataset.name}}
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{dataset.sourceId}} Unit: {{dataset.unit}}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <div class="dataset-content">
+
+
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" for="name">Name</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control " id="name" [(ngModel)]="dataset.name" name="name">
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" for="unit">Unit</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" id="unit" [(ngModel)]="dataset.unit" name="unit">
+                    </div>
+                  </div>
+
+
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" for="color">Axis</label>
+                    <div class="col-sm-8">
+                      <select class="form-control" id="device" required [(ngModel)]="dataset.chartDataset.yAxisID" name="device">
+                        <option *ngFor="let axis of selectedObject.axes" [value]="axis.id">{{axis.id}}</option>
+                      </select>
+                    </div>
+                  </div>
+
+
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label" for="color">Auto Label</label>
+                    <div class="col-sm-1 col-form-label">
+                      <input type="checkbox" class="form-check-input big-checkbox" id="handler" [(ngModel)]="dataset.autoLabel" name="handler">
+                    </div>
+                    <label class="col-sm-3 col-form-label" for="color">Auto Range</label>
+
+                    <div class="col-sm-1 col-form-label" for="color">
+                      <input type="checkbox" class="form-check-input big-checkbox" id="handler" [(ngModel)]="dataset.autoRange" name="handler">
+                    </div>
+                    <label class="col-sm-3 col-form-label" for="color">Neg. Range</label>
+
+                    <div class="col-sm-1 col-form-label" for="color">
+                      <input type="checkbox" class="form-check-input big-checkbox" id="handler" [(ngModel)]="dataset.negRange" name="handler">
+                    </div>
+                  </div>
+
+
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" for="color">Measurement Device</label>
+                    <div class="col-sm-8">
+                      <select class="form-control" id="device" required [(ngModel)]="dataset.sourceId" name="device">
+                        <option *ngFor="let device of devices" [value]="device.deviceId">{{device.deviceId}}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" for="color">Color</label>
+                    <div class="col-sm-8">
+                      <input type="color" class="form-control" id="color" [(ngModel)]="dataset.chartDataset.borderColor" name="color">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" for="color">Apply function</label>
+                    <div class="col-sm-8">
+                      <input type="checkbox" class="form-check-input big-checkbox" id="handler" [(ngModel)]="dataset.customDataHandlerEnabled" name="handler">
+                      <textarea type="textarea" class="form-control" id="function" *ngIf="dataset.customDataHandlerEnabled" [(ngModel)]="dataset.handler" name="function"> </textarea>
+                    </div>
+                  </div>
+                  <div class="form-group row float-right">
+                    <button class="btn btn-danger" (click)="deleteDataset(dataset.datasetId)"> Delete dataset </button>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+            <div class="form-group row nopad">
+              <div class="col-sm-12" style="text-align:right; margin-top:10px; margin-right:0px; padding-right:0px ;">
+                <button class="btn-slim float-right btn btn-success dataset-btn d-flex justify-content-center align-content-between" (click)="addDataset()">
+                  <mat-icon class="mr-1" style="height:20px; width:20px;">
+                    add
+                  </mat-icon> Add Dataset
+                </button>
+
+              </div>
+            </div>
+
+            <div class="form-group row nopad">
+              <div class="col-sm-12 nopad" style="text-align:right">
+                <button [disabled]="chartObjects.length <= 1" class="btn-slim float-right btn btn-danger dataset-btn d-flex justify-content-center align-content-between" (click)="deleteChart()">
+                  <mat-icon class="mr-1" style="height:20px; width:20px;">
+                    delete
+                  </mat-icon> Delete Chart
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div style="float:right; margin-top:-10px;">
+        <button class="btn btn-primary dataset-btn" (click)="storeSettings()"> Store changes</button>
+      </div>
+    </div>
+
+  </div>
+
+
+
+</div>

@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.6.2" />
+<title>flask_app.config API documentation</title>
+<meta name="description" content="This module has configurations for flask app." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>flask_app.config</code></h1>
+</header>
+<section id="section-intro">
+<p>This module has configurations for flask app.</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python"># !/usr/bin/env python
+# -*- coding: utf-8 -*-
+&#34;&#34;&#34;This module has configurations for flask app.&#34;&#34;&#34;
+
+import logging
+import os
+from datetime import timedelta
+CONFIG = {
+    &#34;development&#34;: &#34;flask_app.config.DevelopmentConfig&#34;,
+    &#34;testing&#34;: &#34;flask_app.config.TestingConfig&#34;,
+    &#34;production&#34;: &#34;flask_app.config.ProductionConfig&#34;,
+    &#34;default&#34;: &#34;flask_app.config.ProductionConfig&#34;
+}
+
+
+class BaseConfig(object):
+    &#34;&#34;&#34;Base class for default set of configs.&#34;&#34;&#34;
+
+    POLLING_TIME_DELAY = 0.1
+    PORT = 8080
+    IP = &#39;0.0.0.0&#39;
+    PIN_CODE = &#34;1234&#34;
+    DEBUG = False
+    TESTING = False
+    SECURITY_PASSWORD_HASH = &#39;pbkdf2_sha512&#39;
+    SECURITY_TRACKABLE = True
+    LOGGING_FORMAT = &#34;[%(asctime)s] [%(funcName)-30s] +\
+                                    [%(levelname)-6s] %(message)s&#34;
+    LOGGING_LOCATION = &#39;web.log&#39;
+    LOGGING_LEVEL = logging.DEBUG
+    SECURITY_TOKEN_MAX_AGE = 60 * 30
+    SECURITY_CONFIRMABLE = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    CACHE_TYPE = &#39;simple&#39;
+    SECURITY_PASSWORD_SALT = &#39;super-secret-stuff-here&#39;
+    COMPRESS_MIMETYPES = [&#39;text/html&#39;, &#39;text/css&#39;, &#39;text/xml&#39;,
+                          &#39;application/json&#39;, &#39;application/javascript&#39;]
+
+    WTF_CSRF_ENABLED = False
+    COMPRESS_LEVEL = 6
+    COMPRESS_MIN_SIZE = 500
+
+    LOG_TO_CONSOLE = False
+    JWT_EXPIRES = timedelta(minutes=10)
+
+
+class DevelopmentConfig(BaseConfig):
+    &#34;&#34;&#34;Default set of configurations for development mode.&#34;&#34;&#34;
+
+    DEBUG = True
+    LOG_TO_CONSOLE = True
+    TESTING = False
+    BASEDIR = os.path.abspath(os.path.dirname(__file__))
+    SECRET_KEY = &#39;not-so-super-secret&#39;
+    JWT_SECRET_KEY = &#39;another_super_awesome_secret_stuff_yo.&#39;
+
+
+class ProductionConfig(BaseConfig):
+    &#34;&#34;&#34;Default set of configurations for prod mode.&#34;&#34;&#34;
+
+    DEBUG = True
+    TESTING = False
+    BASEDIR = os.path.abspath(os.path.dirname(__file__))
+
+    SECRET_KEY = &#39;lG8-PNVN-hft6-7S2n-BAyhC-FALO-G1by-aipw&#39;
+    JWT_SECRET_KEY = &#39;2RsKj89-DCZowzk-QwB5g3-t0wBW4Q-wticR.&#39;
+
+
+class TestingConfig(BaseConfig):
+    &#34;&#34;&#34;Default set of configurations for test mode.&#34;&#34;&#34;
+
+    DEBUG = True
+    TESTING = True
+    SECRET_KEY = &#39;792842bc-c4df-4de1-9177-we2vgns23sd&#39;
+    JWT_SECRET_KEY = &#39;XhCF-W3oT-iSuP-jKmr-ETSuJ-WkYPJ-tlKAxe.&#39;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="flask_app.config.BaseConfig"><code class="flex name class">
+<span>class <span class="ident">BaseConfig</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Base class for default set of configs.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class BaseConfig(object):
+    &#34;&#34;&#34;Base class for default set of configs.&#34;&#34;&#34;
+
+    POLLING_TIME_DELAY = 0.1
+    PORT = 8080
+    IP = &#39;0.0.0.0&#39;
+    PIN_CODE = &#34;1234&#34;
+    DEBUG = False
+    TESTING = False
+    SECURITY_PASSWORD_HASH = &#39;pbkdf2_sha512&#39;
+    SECURITY_TRACKABLE = True
+    LOGGING_FORMAT = &#34;[%(asctime)s] [%(funcName)-30s] +\
+                                    [%(levelname)-6s] %(message)s&#34;
+    LOGGING_LOCATION = &#39;web.log&#39;
+    LOGGING_LEVEL = logging.DEBUG
+    SECURITY_TOKEN_MAX_AGE = 60 * 30
+    SECURITY_CONFIRMABLE = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    CACHE_TYPE = &#39;simple&#39;
+    SECURITY_PASSWORD_SALT = &#39;super-secret-stuff-here&#39;
+    COMPRESS_MIMETYPES = [&#39;text/html&#39;, &#39;text/css&#39;, &#39;text/xml&#39;,
+                          &#39;application/json&#39;, &#39;application/javascript&#39;]
+
+    WTF_CSRF_ENABLED = False
+    COMPRESS_LEVEL = 6
+    COMPRESS_MIN_SIZE = 500
+
+    LOG_TO_CONSOLE = False
+    JWT_EXPIRES = timedelta(minutes=10)</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="flask_app.config.DevelopmentConfig" href="#flask_app.config.DevelopmentConfig">DevelopmentConfig</a></li>
+<li><a title="flask_app.config.ProductionConfig" href="#flask_app.config.ProductionConfig">ProductionConfig</a></li>
+<li><a title="flask_app.config.TestingConfig" href="#flask_app.config.TestingConfig">TestingConfig</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="flask_app.config.BaseConfig.CACHE_TYPE"><code class="name">var <span class="ident">CACHE_TYPE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.COMPRESS_LEVEL"><code class="name">var <span class="ident">COMPRESS_LEVEL</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.COMPRESS_MIMETYPES"><code class="name">var <span class="ident">COMPRESS_MIMETYPES</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.COMPRESS_MIN_SIZE"><code class="name">var <span class="ident">COMPRESS_MIN_SIZE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.DEBUG"><code class="name">var <span class="ident">DEBUG</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.IP"><code class="name">var <span class="ident">IP</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.JWT_EXPIRES"><code class="name">var <span class="ident">JWT_EXPIRES</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.LOGGING_FORMAT"><code class="name">var <span class="ident">LOGGING_FORMAT</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.LOGGING_LEVEL"><code class="name">var <span class="ident">LOGGING_LEVEL</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.LOGGING_LOCATION"><code class="name">var <span class="ident">LOGGING_LOCATION</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.LOG_TO_CONSOLE"><code class="name">var <span class="ident">LOG_TO_CONSOLE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.PIN_CODE"><code class="name">var <span class="ident">PIN_CODE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.POLLING_TIME_DELAY"><code class="name">var <span class="ident">POLLING_TIME_DELAY</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.PORT"><code class="name">var <span class="ident">PORT</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.SECURITY_CONFIRMABLE"><code class="name">var <span class="ident">SECURITY_CONFIRMABLE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.SECURITY_PASSWORD_HASH"><code class="name">var <span class="ident">SECURITY_PASSWORD_HASH</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.SECURITY_PASSWORD_SALT"><code class="name">var <span class="ident">SECURITY_PASSWORD_SALT</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.SECURITY_TOKEN_MAX_AGE"><code class="name">var <span class="ident">SECURITY_TOKEN_MAX_AGE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.SECURITY_TRACKABLE"><code class="name">var <span class="ident">SECURITY_TRACKABLE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.SQLALCHEMY_TRACK_MODIFICATIONS"><code class="name">var <span class="ident">SQLALCHEMY_TRACK_MODIFICATIONS</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.TESTING"><code class="name">var <span class="ident">TESTING</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.BaseConfig.WTF_CSRF_ENABLED"><code class="name">var <span class="ident">WTF_CSRF_ENABLED</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+</dl>
+</dd>
+<dt id="flask_app.config.DevelopmentConfig"><code class="flex name class">
+<span>class <span class="ident">DevelopmentConfig</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Default set of configurations for development mode.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class DevelopmentConfig(BaseConfig):
+    &#34;&#34;&#34;Default set of configurations for development mode.&#34;&#34;&#34;
+
+    DEBUG = True
+    LOG_TO_CONSOLE = True
+    TESTING = False
+    BASEDIR = os.path.abspath(os.path.dirname(__file__))
+    SECRET_KEY = &#39;not-so-super-secret&#39;
+    JWT_SECRET_KEY = &#39;another_super_awesome_secret_stuff_yo.&#39;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="flask_app.config.BaseConfig" href="#flask_app.config.BaseConfig">BaseConfig</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="flask_app.config.DevelopmentConfig.BASEDIR"><code class="name">var <span class="ident">BASEDIR</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.DevelopmentConfig.DEBUG"><code class="name">var <span class="ident">DEBUG</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.DevelopmentConfig.JWT_SECRET_KEY"><code class="name">var <span class="ident">JWT_SECRET_KEY</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.DevelopmentConfig.LOG_TO_CONSOLE"><code class="name">var <span class="ident">LOG_TO_CONSOLE</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.DevelopmentConfig.SECRET_KEY"><code class="name">var <span class="ident">SECRET_KEY</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.DevelopmentConfig.TESTING"><code class="name">var <span class="ident">TESTING</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+</dl>
+</dd>
+<dt id="flask_app.config.ProductionConfig"><code class="flex name class">
+<span>class <span class="ident">ProductionConfig</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Default set of configurations for prod mode.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class ProductionConfig(BaseConfig):
+    &#34;&#34;&#34;Default set of configurations for prod mode.&#34;&#34;&#34;
+
+    DEBUG = True
+    TESTING = False
+    BASEDIR = os.path.abspath(os.path.dirname(__file__))
+
+    SECRET_KEY = &#39;lG8-PNVN-hft6-7S2n-BAyhC-FALO-G1by-aipw&#39;
+    JWT_SECRET_KEY = &#39;2RsKj89-DCZowzk-QwB5g3-t0wBW4Q-wticR.&#39;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="flask_app.config.BaseConfig" href="#flask_app.config.BaseConfig">BaseConfig</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="flask_app.config.ProductionConfig.BASEDIR"><code class="name">var <span class="ident">BASEDIR</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.ProductionConfig.DEBUG"><code class="name">var <span class="ident">DEBUG</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.ProductionConfig.JWT_SECRET_KEY"><code class="name">var <span class="ident">JWT_SECRET_KEY</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.ProductionConfig.SECRET_KEY"><code class="name">var <span class="ident">SECRET_KEY</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.ProductionConfig.TESTING"><code class="name">var <span class="ident">TESTING</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+</dl>
+</dd>
+<dt id="flask_app.config.TestingConfig"><code class="flex name class">
+<span>class <span class="ident">TestingConfig</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Default set of configurations for test mode.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class TestingConfig(BaseConfig):
+    &#34;&#34;&#34;Default set of configurations for test mode.&#34;&#34;&#34;
+
+    DEBUG = True
+    TESTING = True
+    SECRET_KEY = &#39;792842bc-c4df-4de1-9177-we2vgns23sd&#39;
+    JWT_SECRET_KEY = &#39;XhCF-W3oT-iSuP-jKmr-ETSuJ-WkYPJ-tlKAxe.&#39;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="flask_app.config.BaseConfig" href="#flask_app.config.BaseConfig">BaseConfig</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="flask_app.config.TestingConfig.DEBUG"><code class="name">var <span class="ident">DEBUG</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.TestingConfig.JWT_SECRET_KEY"><code class="name">var <span class="ident">JWT_SECRET_KEY</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.TestingConfig.SECRET_KEY"><code class="name">var <span class="ident">SECRET_KEY</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="flask_app.config.TestingConfig.TESTING"><code class="name">var <span class="ident">TESTING</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="flask_app" href="index.html">flask_app</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="flask_app.config.BaseConfig" href="#flask_app.config.BaseConfig">BaseConfig</a></code></h4>
+<ul class="">
+<li><code><a title="flask_app.config.BaseConfig.CACHE_TYPE" href="#flask_app.config.BaseConfig.CACHE_TYPE">CACHE_TYPE</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.COMPRESS_LEVEL" href="#flask_app.config.BaseConfig.COMPRESS_LEVEL">COMPRESS_LEVEL</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.COMPRESS_MIMETYPES" href="#flask_app.config.BaseConfig.COMPRESS_MIMETYPES">COMPRESS_MIMETYPES</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.COMPRESS_MIN_SIZE" href="#flask_app.config.BaseConfig.COMPRESS_MIN_SIZE">COMPRESS_MIN_SIZE</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.DEBUG" href="#flask_app.config.BaseConfig.DEBUG">DEBUG</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.IP" href="#flask_app.config.BaseConfig.IP">IP</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.JWT_EXPIRES" href="#flask_app.config.BaseConfig.JWT_EXPIRES">JWT_EXPIRES</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.LOGGING_FORMAT" href="#flask_app.config.BaseConfig.LOGGING_FORMAT">LOGGING_FORMAT</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.LOGGING_LEVEL" href="#flask_app.config.BaseConfig.LOGGING_LEVEL">LOGGING_LEVEL</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.LOGGING_LOCATION" href="#flask_app.config.BaseConfig.LOGGING_LOCATION">LOGGING_LOCATION</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.LOG_TO_CONSOLE" href="#flask_app.config.BaseConfig.LOG_TO_CONSOLE">LOG_TO_CONSOLE</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.PIN_CODE" href="#flask_app.config.BaseConfig.PIN_CODE">PIN_CODE</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.POLLING_TIME_DELAY" href="#flask_app.config.BaseConfig.POLLING_TIME_DELAY">POLLING_TIME_DELAY</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.PORT" href="#flask_app.config.BaseConfig.PORT">PORT</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.SECURITY_CONFIRMABLE" href="#flask_app.config.BaseConfig.SECURITY_CONFIRMABLE">SECURITY_CONFIRMABLE</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.SECURITY_PASSWORD_HASH" href="#flask_app.config.BaseConfig.SECURITY_PASSWORD_HASH">SECURITY_PASSWORD_HASH</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.SECURITY_PASSWORD_SALT" href="#flask_app.config.BaseConfig.SECURITY_PASSWORD_SALT">SECURITY_PASSWORD_SALT</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.SECURITY_TOKEN_MAX_AGE" href="#flask_app.config.BaseConfig.SECURITY_TOKEN_MAX_AGE">SECURITY_TOKEN_MAX_AGE</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.SECURITY_TRACKABLE" href="#flask_app.config.BaseConfig.SECURITY_TRACKABLE">SECURITY_TRACKABLE</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.SQLALCHEMY_TRACK_MODIFICATIONS" href="#flask_app.config.BaseConfig.SQLALCHEMY_TRACK_MODIFICATIONS">SQLALCHEMY_TRACK_MODIFICATIONS</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.TESTING" href="#flask_app.config.BaseConfig.TESTING">TESTING</a></code></li>
+<li><code><a title="flask_app.config.BaseConfig.WTF_CSRF_ENABLED" href="#flask_app.config.BaseConfig.WTF_CSRF_ENABLED">WTF_CSRF_ENABLED</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="flask_app.config.DevelopmentConfig" href="#flask_app.config.DevelopmentConfig">DevelopmentConfig</a></code></h4>
+<ul class="two-column">
+<li><code><a title="flask_app.config.DevelopmentConfig.BASEDIR" href="#flask_app.config.DevelopmentConfig.BASEDIR">BASEDIR</a></code></li>
+<li><code><a title="flask_app.config.DevelopmentConfig.DEBUG" href="#flask_app.config.DevelopmentConfig.DEBUG">DEBUG</a></code></li>
+<li><code><a title="flask_app.config.DevelopmentConfig.JWT_SECRET_KEY" href="#flask_app.config.DevelopmentConfig.JWT_SECRET_KEY">JWT_SECRET_KEY</a></code></li>
+<li><code><a title="flask_app.config.DevelopmentConfig.LOG_TO_CONSOLE" href="#flask_app.config.DevelopmentConfig.LOG_TO_CONSOLE">LOG_TO_CONSOLE</a></code></li>
+<li><code><a title="flask_app.config.DevelopmentConfig.SECRET_KEY" href="#flask_app.config.DevelopmentConfig.SECRET_KEY">SECRET_KEY</a></code></li>
+<li><code><a title="flask_app.config.DevelopmentConfig.TESTING" href="#flask_app.config.DevelopmentConfig.TESTING">TESTING</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="flask_app.config.ProductionConfig" href="#flask_app.config.ProductionConfig">ProductionConfig</a></code></h4>
+<ul class="">
+<li><code><a title="flask_app.config.ProductionConfig.BASEDIR" href="#flask_app.config.ProductionConfig.BASEDIR">BASEDIR</a></code></li>
+<li><code><a title="flask_app.config.ProductionConfig.DEBUG" href="#flask_app.config.ProductionConfig.DEBUG">DEBUG</a></code></li>
+<li><code><a title="flask_app.config.ProductionConfig.JWT_SECRET_KEY" href="#flask_app.config.ProductionConfig.JWT_SECRET_KEY">JWT_SECRET_KEY</a></code></li>
+<li><code><a title="flask_app.config.ProductionConfig.SECRET_KEY" href="#flask_app.config.ProductionConfig.SECRET_KEY">SECRET_KEY</a></code></li>
+<li><code><a title="flask_app.config.ProductionConfig.TESTING" href="#flask_app.config.ProductionConfig.TESTING">TESTING</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="flask_app.config.TestingConfig" href="#flask_app.config.TestingConfig">TestingConfig</a></code></h4>
+<ul class="">
+<li><code><a title="flask_app.config.TestingConfig.DEBUG" href="#flask_app.config.TestingConfig.DEBUG">DEBUG</a></code></li>
+<li><code><a title="flask_app.config.TestingConfig.JWT_SECRET_KEY" href="#flask_app.config.TestingConfig.JWT_SECRET_KEY">JWT_SECRET_KEY</a></code></li>
+<li><code><a title="flask_app.config.TestingConfig.SECRET_KEY" href="#flask_app.config.TestingConfig.SECRET_KEY">SECRET_KEY</a></code></li>
+<li><code><a title="flask_app.config.TestingConfig.TESTING" href="#flask_app.config.TestingConfig.TESTING">TESTING</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.6.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

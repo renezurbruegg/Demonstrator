@@ -1,0 +1,10 @@
+<div class = "container-fluid">
+  <div class="row no-padding">
+    <div *ngFor="let chart of chartObjects"
+     class="no-padding col-lg-{{chart.col.lg}} col-md-{{chart.col.md}} col-xs-{{chart.col.xs}} col-sm-{{chart.col.sm}}">
+      <app-chart
+       [chartObject] = "chart" >
+     </app-chart>
+  </div>
+  </div>
+</div>

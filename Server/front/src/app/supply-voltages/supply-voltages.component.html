@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      Supply Voltages
+    </div>
+    <div class="card-body">
+      <div class="container">
+        <form (ngSubmit)="onSubmit()">
+          <div class="row" *ngFor="let id of settings.supplies; let i = index">
+            <app-control-slider deviceId={{i}}> </app-control-slider>
+          </div>
+
+          <div class="row float-right">
+            <button type="submit" [disabled]="!validInputs" class="btn btn-success">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

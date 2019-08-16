@@ -1,0 +1,67 @@
+.control-slider-header {
+  padding-left: 10px;
+  padding-bottom: 4px;
+}
+
+.invalid {
+  border: 1px solid red;
+}
+
+.voltage-input {
+  background-color: transparent;
+  border: 0;
+  font-size: 1em;
+  width: 50px;
+}
+
+.output-voltage {
+  background: none;
+}
+
+.big-checkbox {
+  width: 20px;
+  height: 20px;
+  left: -3px
+}
+
+.maxValueCheckbox {
+  margin-top: 7px;
+}
+
+.maxValueCheckboxText {
+  margin-top: 4px;
+  margin-left: 2px;
+}
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  padding: 6px 0px;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.42857;
+}
+
+.voltage-slider {
+  padding-left: 10px;
+  padding-right: 10px;
+  /* padding-top:5px;
+    padding-bottom: 7px;
+    margin-top:20px;
+    border:1px solid gray;
+    background-color:#fafafa; */
+}
+
+.slider-control {
+  border: 1px solid #efefef;
+  background-color: #fafafa;
+  margin-bottom: 5px;
+}
+
+.step-btn {
+  background-color: #e1e1e1;
+  line-height: 1.42857;
+  font-size: 14px;
+  //height:30px;
+}

@@ -1,0 +1,77 @@
+<div class="container">
+
+  <div class="card">
+    <div class="card-header">
+      Measurement Devices
+    </div>
+    <div class="card-body">
+      <div class="container">
+        <form (ngSubmit)="onSubmit()">
+
+          <div class="row ">
+            <h5> Voltage Measurement</h5>
+            <mat-icon style="color:black">
+              battery_20
+            </mat-icon>
+            <i class="material-icons">
+              battery_20
+            </i>
+          </div>
+
+          <div class="row" *ngFor="let device of voltageDevices; let i = index">
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" style="color:gray">
+                {{device.deviceId}}
+              </label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control " id="name" [(ngModel)]="device.name" [ngModelOptions]="{standalone: true}">
+              </div>
+              <label class="col-sm-3 col-form-label" for="color">Resolution:</label>
+
+              <div class="form-check col-sm-2" style="padding-top: 5px;">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="device.autoResolution" [ngModelOptions]="{standalone: true}">
+                <label class="form-check-label" for="materialChecked2">Auto</label>
+              </div>
+
+              <div class="col-sm-3">
+                <select [disabled]="device.autoResolution" class="form-control" id="device" required [(ngModel)]="device.desiredResolution" [ngModelOptions]="{standalone: true}">
+                  <option *ngFor="let resolution of voltageResolutionMap ; let i = index" [value]="i+1">{{resolution}}</option>
+
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row ">
+            <h5> Current Measurement</h5>
+          </div>
+
+          <div class="row" *ngFor="let curr_device of currentDevices; let i = index">
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" style="color:gray">
+                {{curr_device.deviceId}}
+              </label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control " id="name" [(ngModel)]="curr_device.name" [ngModelOptions]="{standalone: true}">
+              </div>
+              <label class="col-sm-3 col-form-label" for="color">Resolution:</label>
+              <div class="form-check col-sm-2" style="    padding-top: 5px;">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="curr_device.autoResolution" [ngModelOptions]="{standalone: true}">
+                <label class="form-check-label" for="materialChecked2">Auto</label>
+              </div>
+              <div class="col-sm-3">
+                <select [disabled]="curr_device.autoResolution" class="form-control" id="device-current" required [(ngModel)]="curr_device.desiredResolution" [ngModelOptions]="{standalone: true}">
+                  <option *ngFor="let resolution of currentResolutionMap ; let i = index" [value]="i+1">{{resolution}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row float-right">
+            <button type="submit" [disabled]="!validInputs" class="btn btn-success">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

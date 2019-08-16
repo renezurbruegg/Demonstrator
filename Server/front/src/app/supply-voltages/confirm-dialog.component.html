@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Are you sure you want to submit these changes ?</h1>
+<div mat-dialog-content style="border-bottom:1px solid lightgray; padding-bottom:5px;">
+  <div class="row" *ngFor = "let item of data.values;">
+    <div class="input-group-prepend control-slider-header">
+      <span class="input-group-text" id="">{{item.name}}</span>
+
+    </div>
+    <span class="input-group-text clean-text" style = "background-color:white" >
+      {{item.oldValue}}
+      <mat-icon>
+        trending_flat
+      </mat-icon>
+      {{item.newValue}}
+    </span>
+  </div>
+
+
+</div>
+<div mat-dialog-actions class = "button-bar">
+  <button mat-button mat-raised-button (click)="onNoClick()" style = "width:45%">Cancel</button>
+<button mat-button mat-raised-button (click) = "onYesClick()" style = "width:45%" cdkFocusInitial>Set Values</button>
+</div>

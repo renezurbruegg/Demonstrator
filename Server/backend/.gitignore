@@ -1,0 +1,8 @@
+*.pyc
+*.db
+*.log
+*.csv
+*.info
+*.png
+Output
+export

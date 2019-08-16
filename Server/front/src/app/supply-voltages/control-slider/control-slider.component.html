@@ -1,0 +1,44 @@
+<div class="input-group">
+  <button type="button" [ngClass]="{'btn-danger' : supply.enabled, 'focus' : supply.enabled, 'btn-dark':!supply.enabled}" class="btn btn-circle" (click)="toggleEnabled()">
+    <mat-icon matListIcon [inline]="true">
+      power_settings_new
+    </mat-icon>
+  </button>
+
+  <div class="input-group-prepend control-slider-header">
+    <span class="input-group-text" id="">{{supply.name}}</span>
+    <span class="input-group-text output-voltage" [ngClass]="{'invalid' : !checkInput}" *ngIf="supply.enabled" id="">
+      <input class="voltage-input" type="text" [disabled]="supply.maxValueChecked" [(ngModel)]="supply.desiredVoltage">{{supply.unit}}
+    </span>
+  </div>
+
+  <div *ngIf="supply.enabled" class="custom-control-inline custom-control">
+    <div class="">
+
+    </div>
+    <div class="slider-control">
+      <button [disabled]="supply.maxValueChecked" type="button" class="btn step-btn" (click)="subFromSlider()">
+        <mat-icon matListIcon [inline]="true">
+          chevron_left
+        </mat-icon>
+      </button>
+      <mv-slider class="voltage-slider" style="width:160px" [(value)]="supply.desiredVoltage" [min]="supply.minValue" [max]="supply.maxValue" [step]="supply.stepSize" [enabled]="supply.enabled && !supply.maxValueChecked">
+      </mv-slider>
+      <button [disabled]="supply.maxValueChecked" type="button" class="btn  step-btn" (click)="addToSlider()">
+        <mat-icon matListIcon [inline]="true">
+          chevron_right
+        </mat-icon>
+      </button>
+
+    </div>
+
+    <div *ngIf="supply.maxFix" class="input-group-prepend control-slider-header">
+      <span class="input-group" *ngIf="supply.enabled" id="">
+        <input type="checkbox" class="maxValueCheckbox big-checkbox" id="handler" [(ngModel)]="supply.maxValueChecked" name="handler">
+      </span>
+      <span class="maxValueCheckboxText" id="">{{supply.maxFix}}V</span>
+
+
+    </div>
+  </div>
+</div>

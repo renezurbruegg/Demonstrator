@@ -1,0 +1,2469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.6.2" />
+<title>flask_app.server API documentation</title>
+<meta name="description" content="Entry point for the server application." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>flask_app.server</code></h1>
+</header>
+<section id="section-intro">
+<p>Entry point for the server application.</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python"># !/usr/bin/env python
+# -*- coding: utf-8 -*-
+&#34;&#34;&#34;Entry point for the server application.&#34;&#34;&#34;
+import threading
+import json
+import logging
+from pylogging import HandlerType, setup_logger
+import time
+import os
+import sys
+
+
+from flask_cors import CORS
+from .config import CONFIG
+import traceback
+from flask import request, jsonify, current_app, Flask
+from flask_jwt_simple import (
+    JWTManager, jwt_required, create_jwt, get_jwt_identity
+)
+
+from .http_codes import Status
+from flask import make_response
+
+from datetime import timedelta, datetime
+from functools import update_wrapper
+
+
+logger = logging.getLogger(__name__)
+setup_logger(log_directory=&#39;./logs&#39;, file_handler_type=HandlerType.ROTATING_FILE_HANDLER, allow_console_logging = True, console_log_level  = logging.DEBUG, max_file_size_bytes = 1000000)
+
+
+try:
+    import RPi.GPIO as GPIO
+    from pijuice import PiJuice # Import pijuice module
+    import rpi_backlight as backlight
+    simul = False
+except ImportError:
+    simul = True
+    logger.error(&#34;could not import GPIO&#34;)
+
+# import cv2
+#
+# cap = cv2.VideoCapture(0)
+
+if(simul == False):
+    GPIO.setmode(GPIO.BCM)
+
+
+# Import used Devices, must be here because GPIO Mode has to be set first
+from .Devices import varSupplies, LTCDevices, measurementDevices
+
+SPI_MOSI = 10
+SPI_MISO = 9
+SPI_CLK = 11
+
+if(simul == False):
+    GPIO.setup(SPI_MOSI, GPIO.OUT, initial = GPIO.LOW)
+    GPIO.setup(SPI_MISO, GPIO.OUT, initial = GPIO.LOW)
+    GPIO.setup(SPI_CLK, GPIO.OUT, initial = GPIO.LOW)
+
+mutex = threading.Lock()
+# Create Flask App
+app = Flask(__name__)
+# Load Configuration for app. Secret key etc.
+config_name = os.getenv(&#39;FLASK_CONFIGURATION&#39;, &#39;default&#39;)
+app.config.from_object(CONFIG[config_name])
+
+# Set Cors header. Used to accept connections from browser using XHTTP requests.
+CORS(app, headers=[&#39;Content-Type&#39;])
+jwt = JWTManager(app)
+
+
+ # Object to store the last measured voltage values
+voltageValues = {}
+voltageValuesSum = {}
+
+#Pin Code
+pinCode = app.config[&#34;PIN_CODE&#34;]
+
+#Polling time delay for Polling thread
+pollingTimeDelay = app.config[&#34;POLLING_TIME_DELAY&#34;]
+
+
+if(not simul):
+    pijuice = PiJuice(1, 0x14) # Instantiate PiJuice interface object
+#init values
+for dev in measurementDevices.keys():
+    obj = {
+        &#34;value&#34; : 0,
+        &#34;unit&#34; : &#34;&#34;,
+        &#34;max&#34;: &#34;&#34;
+    }
+    voltageValues[dev] = obj;
+
+&#34;&#34;&#34; Path to config file (.json) for frontend &#34;&#34;&#34;
+CONF_FILE = os.path.join(os.path.dirname(__file__), &#39;conf.json&#39;)
+OUTPUT_FILE = os.path.join(os.path.dirname(__file__), &#39;output.csv&#39;)
+EXPORT_FOLDER = os.path.join(os.path.dirname(__file__), &#39;../export/&#39;)
+
+@jwt.jwt_data_loader
+def add_claims_to_access_token(identity):
+    now = datetime.utcnow()
+    return {
+        &#39;exp&#39;: now + current_app.config[&#39;JWT_EXPIRES&#39;],
+        &#39;iat&#39;: now,
+        &#39;nbf&#39;: now,
+        &#39;sub&#39;: identity,
+        &#39;roles&#39;: &#39;Admin&#39;
+    }
+
+
+def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
+                attach_to_all=True, automatic_options=True):
+    &#34;&#34;&#34;Decorator function that allows crossdomain requests.
+      Courtesy of
+      https://blog.skyred.fi/articles/better-crossdomain-snippet-for-flask.html
+    &#34;&#34;&#34;
+    if methods is not None:
+        methods = &#39;, &#39;.join(sorted(x.upper() for x in methods))
+    # use str instead of basestring if using Python 3.x
+    if headers is not None and not isinstance(headers, list):
+        headers = &#39;, &#39;.join(x.upper() for x in headers)
+    # use str instead of basestring if using Python 3.x
+    if not isinstance(origin, list):
+        origin = &#39;, &#39;.join(origin)
+    if isinstance(max_age, timedelta):
+        max_age = max_age.total_seconds()
+
+    def get_methods():
+        &#34;&#34;&#34; Determines which methods are allowed
+        &#34;&#34;&#34;
+        if methods is not None:
+            return methods
+
+        options_resp = current_app.make_default_options_response()
+        return options_resp.headers[&#39;allow&#39;]
+
+    def decorator(f):
+        &#34;&#34;&#34;The decorator function
+        &#34;&#34;&#34;
+        def wrapped_function(*args, **kwargs):
+            &#34;&#34;&#34;Caries out the actual cross domain code
+            &#34;&#34;&#34;
+            if automatic_options and request.method == &#39;OPTIONS&#39;:
+                resp = current_app.make_default_options_response()
+            else:
+                resp = make_response(f(*args, **kwargs))
+            if not attach_to_all and request.method != &#39;OPTIONS&#39;:
+                return resp
+
+            h = resp.headers
+            h[&#39;Access-Control-Allow-Origin&#39;] = origin
+            h[&#39;Access-Control-Allow-Methods&#39;] = get_methods()
+            h[&#39;Access-Control-Max-Age&#39;] = str(max_age)
+            h[&#39;Access-Control-Allow-Credentials&#39;] = &#39;true&#39;
+            h[&#39;Access-Control-Allow-Headers&#39;] = \
+                &#34;Origin, X-Requested-With, Content-Type, Accept, Authorization&#34;
+            if headers is not None:
+                h[&#39;Access-Control-Allow-Headers&#39;] = headers
+            return resp
+
+        f.provide_automatic_options = False
+        return update_wrapper(wrapped_function, f)
+    return decorator
+
+
+
+#-------------------------------------------------------------------------------
+#                       BEGIN API Functions
+#-------------------------------------------------------------------------------
+@app.route(&#39;/api/storeconfig&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+@jwt_required
+def storeConfig():
+    &#34;&#34;&#34;
+        ### API Path   `/api/storeconfig`
+        ### Request Type: `POST`
+        Stores the given JSON Object in the Config file specifed by the  CONF_FILE variable.
+        If the JWT Cookie is not set, this method will return Status Code 401 UNAUTHORIZED.
+        Return Status Code 500 if the file could not be opened.
+    &#34;&#34;&#34;
+    try:
+        storeConfigObject(request.get_json())
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error)
+        return error , Status.HTTP_SERVER_ERROR;
+
+    return &#34;OK&#34;, Status.HTTP_OK_BASIC
+
+
+@app.route(&#39;/api/loadconfig&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+def loadConfig():
+    &#34;&#34;&#34;
+    ### API Path   `/api/loadconfig`
+    ### Request Type: `GET`
+    Loads the configuration specified in the CONF_FILE file.
+    Returns a JSON Object with all Configurations that are defined.&#34;&#34;&#34;
+    try:
+        with open(CONF_FILE,&#39;r&#39;) as file:
+            return file.read(), Status.HTTP_OK_BASIC
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error)
+        return error, Status.HTTP_SERVER_ERROR;
+
+    return &#34;Unknown Error&#34;, Status.HTTP_SERVER_ERROR;
+
+
+
+@app.route(&#39;/api/update/chartConfig&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+@jwt_required
+def updateChartconfig():
+    &#34;&#34;&#34;
+    ### API Path   `/api/update/chartConfig`
+    ### Request Type: `POST`
+    Updates the device Config stored in the CONF_FILE.
+    Make sure that the JSON Object supplied in the body matches the specification for a Chart config.
+    ### POST Body
+    ```
+    [
+  {
+    &#34;name&#34;: &#34;Voltage chart&#34;,
+    &#34;col&#34;: {
+      &#34;sm&#34;: 12,
+      &#34;md&#34;: 12,
+      &#34;lg&#34;: 6,
+      &#34;xs&#34;: 12
+    },
+    &#34;datasets&#34;: [
+      {
+        &#34;name&#34;: &#34;Voltage vm1&#34;,
+        &#34;autoLabel&#34;: true,
+        &#34;negRange&#34;: false,
+        &#34;chartDataset&#34;: {
+          &#34;currValue&#34;: 3.15,
+          &#34;borderColor&#34;: &#34;#0618f9&#34;,
+          &#34;fill&#34;: false,
+          &#34;yAxisID&#34;: &#34;yAxis1&#34;,
+          &#34;label&#34;: &#34;Voltage vm1[V]&#34;
+        },
+        &#34;borderColor&#34;: &#34;#2196f3&#34;,
+        &#34;customDataHandlerEnabled&#34;: false,
+        &#34;unit&#34;: &#34;V&#34;,
+        &#34;handler&#34;: &#34;&#34;,
+        &#34;datasetId&#34;: &#34;ADS1dataset&#34;,
+        &#34;sourceId&#34;: &#34;vm1&#34;,
+        &#34;autoRange&#34;: true
+      },
+      {
+        &#34;name&#34;: &#34;Voltage vm2&#34;,
+        &#34;negRange&#34;: false,
+        &#34;chartDataset&#34;: {
+          &#34;currValue&#34;: 4.28,
+          &#34;borderColor&#34;: &#34;#44a0bb&#34;,
+          &#34;fill&#34;: false,
+          &#34;yAxisID&#34;: &#34;yAxis2&#34;,
+          &#34;label&#34;: &#34;Voltage vm2[V]&#34;
+        },
+        &#34;lineColor&#34;: &#34;#ff0000&#34;,
+        &#34;autoLabel&#34;: true,
+        &#34;customDataHandlerEnabled&#34;: false,
+        &#34;unit&#34;: &#34;V&#34;,
+        &#34;handler&#34;: &#34;&#34;,
+        &#34;datasetId&#34;: &#34;ADS2dataset&#34;,
+        &#34;sourceId&#34;: &#34;vm2&#34;,
+        &#34;autoRange&#34;: true
+      }
+    ],
+    &#34;axes&#34;: [
+      {
+        &#34;position&#34;: &#34;left&#34;,
+        &#34;id&#34;: &#34;yAxis1&#34;
+      },
+      {
+        &#34;position&#34;: &#34;right&#34;,
+        &#34;id&#34;: &#34;yAxis2&#34;
+      }
+    ],
+    &#34;maxValues&#34;: 40,
+    &#34;chartId&#34;: &#34;Chart#1&#34;
+  },
+  {
+    &#34;name&#34;: &#34;Current Chart&#34;,
+    &#34;col&#34;: {
+      &#34;sm&#34;: 12,
+      &#34;md&#34;: 12,
+      &#34;lg&#34;: 6,
+      &#34;xs&#34;: 12
+    },
+    &#34;datasets&#34;: [
+      {
+        &#34;name&#34;: &#34;Current [cm3]&#34;,
+        &#34;autoLabel&#34;: true,
+        &#34;chartDataset&#34;: {
+          &#34;yAxisID&#34;: &#34;leftAxis&#34;,
+          &#34;lineColor&#34;: &#34;#2196f3&#34;,
+          &#34;label&#34;: &#34;Current [cm3][uA]&#34;,
+          &#34;currValue&#34;: 193.87,
+          &#34;borderColor&#34;: &#34;#e03105&#34;,
+          &#34;fill&#34;: false
+        },
+        &#34;lineColor&#34;: &#34;#2196f3&#34;,
+        &#34;customDataHandlerEnabled&#34;: false,
+        &#34;unit&#34;: &#34;uA&#34;,
+        &#34;handler&#34;: &#34;&#34;,
+        &#34;sourceId&#34;: &#34;cm3&#34;,
+        &#34;autoRange&#34;: true
+      },
+      {
+        &#34;name&#34;: &#34;Current [cm4]&#34;,
+        &#34;autoLabel&#34;: true,
+        &#34;chartDataset&#34;: {
+          &#34;currValue&#34;: 335.78,
+          &#34;borderColor&#34;: &#34;#d89552&#34;,
+          &#34;fill&#34;: false,
+          &#34;yAxisID&#34;: &#34;rightAxis&#34;,
+          &#34;label&#34;: &#34;Current [cm4][uA]&#34;
+        },
+        &#34;customDataHandlerEnabled&#34;: false,
+        &#34;unit&#34;: &#34;uA&#34;,
+        &#34;handler&#34;: &#34;&#34;,
+        &#34;datasetId&#34;: &#34;dataset-1558781553872&#34;,
+        &#34;sourceId&#34;: &#34;cm4&#34;,
+        &#34;autoRange&#34;: true
+      }
+    ],
+    &#34;axes&#34;: [
+      {
+        &#34;position&#34;: &#34;left&#34;,
+        &#34;id&#34;: &#34;leftAxis&#34;
+      },
+      {
+        &#34;position&#34;: &#34;right&#34;,
+        &#34;id&#34;: &#34;rightAxis&#34;
+      }
+    ],
+    &#34;maxValues&#34;: 40,
+    &#34;chartId&#34;: &#34;Chart#2&#34;
+  }
+]
+    ```
+    &#34;&#34;&#34;
+    params = request.get_json()
+    print(json.dumps(params, indent=2, sort_keys=False))
+    try:
+        config_object = getConfigObject()
+        config_object[&#39;charts&#39;] = params
+        storeConfigObject(config_object)
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error);
+        return error , Status.HTTP_SERVER_ERROR;
+
+    return &#34;OK&#34;, 200;
+
+@app.route(&#39;/api/update/measurementDevices&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+@jwt_required
+def updateDevs():
+    &#34;&#34;&#34;
+    ### API Path   `/api/update/measurementDevices`
+    ### Request Type: `POST`
+    Updates the configiruation of the measurements devices supplied in the requests body. &lt;br&gt;
+    JSON Body must follow the following format:
+    ### POST Body
+    ```
+    [
+     {
+      &#34;deviceId&#34;:&lt;String&gt;,
+      &#34;currentResolution&#34;:&lt;int&gt;,
+      &#34;desiredResolution&#34;:&lt;int&gt;,
+      &#34;autoResolution&#34;:&lt;true|false&gt;
+     }
+    ]
+    ```
+    &#34;&#34;&#34;
+    #params are the new values
+    params = request.get_json()
+
+    try:
+        #get the old/stored values
+        config_object = getConfigObject()
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error);
+        return error , Status.HTTP_SERVER_ERROR;
+
+    devices = config_object[&#34;devices&#34;]
+    logger.debug(&#34;Got Params:&#34;)
+    logger.debug(json.dumps(params, indent=2, sort_keys=False))
+
+    for dev in params:
+        try:
+            id = dev[&#34;deviceId&#34;]
+            if(id in measurementDevices.keys()): #check whether id is valid
+                oldResolution=dev[&#34;currentResolution&#34;]
+                newResolution=dev[&#34;desiredResolution&#34;]
+                newautoResolution=dev[&#34;autoResolution&#34;]
+                measurementDevices[id].setResolution(int(newResolution))
+                measurementDevices[id].setAutoResolution(bool(newautoResolution))
+
+                for dev in devices:
+                    if (dev[&#34;deviceId&#34;] == id):
+                        dev[&#34;currentResolution&#34;] = int(newResolution) #müsste das nicht ein string sein???
+                        dev[&#34;autoResolution&#34;]=bool(newautoResolution)
+            else:
+                logger.error(&#34;Device &#34; + str(id) + &#34; not found&#34;)
+                return &#34;Device &#34; + str(id) + &#34; not found&#34;, Status.HTTP_BAD_REQUEST
+        except ValueError as e:
+            logger.error(str(e))
+            return str(e), Status.HTTP_BAD_REQUEST
+
+
+
+    try:
+        storeConfigObject(config_object)
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error)
+        return error , Status.HTTP_SERVER_ERROR
+
+
+    return &#34;&#34; , Status.HTTP_OK_BASIC
+
+
+@app.route(&#39;/api/login&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+def login():
+    &#34;&#34;&#34;
+        ### API Path   `/api/login`
+        ### Request Type: `POST`
+        Logs in an user. checks if the password supplied in the json body matches the pincode.
+        If Login is successfully returns a jwt token used to authenticate the user.
+        JSON Format:
+        ### POST Body
+        ```
+        {
+            password:&lt;string&gt;
+        }
+        ```
+    &#34;&#34;&#34;
+    params = request.get_json()
+    password = params.get(&#39;password&#39;, None)
+
+    #Check if inputs are valid
+    if not password:
+        logger.info(&#39;Password not set!&#39;)
+        return jsonify({&#34;msg&#34;: &#34;Missing Pincode parameter&#34;}), Status.HTTP_BAD_REQUEST
+
+    if password != pinCode:
+        logger.info(&#39;Pincode was wrong&#39;)
+        return jsonify({&#34;msg&#34;: &#34;Wrong Pincode&#34;}), Status.HTTP_BAD_UNAUTHORIZED
+
+    token = {&#39;jwt&#39;: create_jwt(identity=&#34;admin&#34;), &#39;exp&#39;: datetime.utcnow() + current_app.config[&#39;JWT_EXPIRES&#39;]}
+        # id: number;
+        # username: string;
+        # password: string;
+        # firstName: string;
+        # lastName: string;
+        # token?: string;
+    ret = {&#34;id&#34;: &#34;NewUser&#34;, &#34;token&#34;: token}
+
+    logger.info(&#39;Login successfully &#39; + str(ret))
+    return jsonify(ret), Status.HTTP_OK_BASIC
+
+
+
+@app.route(&#34;/api/logout&#34;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@jwt_required
+@crossdomain(origin=&#39;*&#39;)
+def logout():
+    &#34;&#34;&#34;
+    ### API Path   `/api/logout`
+    ### Request Type: `POST`
+    Logs out an user, JWT Token must be set, otherwise Token invalid is returned
+    &#34;&#34;&#34;
+    identity = get_jwt_identity()
+    if not identity:
+        return jsonify({&#34;msg&#34;: &#34;Token invalid&#34;}), Status.HTTP_BAD_UNAUTHORIZED
+    logger.info(&#39;Logged out user !!&#39;)
+    return &#39;logged out successfully&#39;, Status.HTTP_OK_BASIC
+
+
+@app.route(&#39;/api/voltageUpdate/&lt;deviceId&gt;&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def voltageUpdate(deviceId):
+    &#34;&#34;&#34;
+    ### API Path   `/api/voltageUpdate/&lt;deviceId&gt;`
+    ### Request Type: `GET`
+    Requests the curremt voltage/Current for a device.
+    &lt;deviceId&gt; must match the deviceId whose value we want to know (e.g VM1, CM3).
+    If ALL is used as Device Id, all Values will be returned&#34;&#34;&#34;
+    logger.info(&#39;Volt update requested for device id: &#39; + deviceId)
+
+    if(deviceId == &#34;ALL&#34;):
+        mutex.acquire()
+        ret = jsonify(voltageValues)
+        mutex.release()
+        return ret, Status.HTTP_OK_BASIC
+
+    try:
+        mutex.acquire()
+        ret = voltageValues[deviceId]
+        mutex.release()
+        return ret, Status.HTTP_OK_BASIC
+
+    except KeyError:
+        return &#34;Device Id not Found&#34;, Status.HTTP_BAD_REQUEST
+
+
+
+@app.route(&#39;/api/getSystemInfos&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def getSystemInfos():
+    &#34;&#34;&#34;
+    ### API Path   `/api/getSystemInfos`
+    ### Request Type: `GET`
+    Return information about the system.
+    ###Returns:
+    ```
+    {
+        battery: {
+            value: &lt;value&gt;,
+            charging: &lt;bool&gt;
+        },
+        temp: &lt;string&gt;
+    }
+    ```
+    &#34;&#34;&#34;
+
+    data = {}
+
+    data[&#34;battery&#34;] = {}
+    # return (temp.replace(&#34;temp=&#34;,&#34;&#34;))
+    if(simul):
+        data[&#34;battery&#34;][&#34;value&#34;] = &#34;33&#34;
+        data[&#34;battery&#34;][&#34;charging&#34;] = &#34;false&#34;
+        data[&#34;temp&#34;] = &#34;12C&#34;
+        return jsonify(data), Status.HTTP_OK_BASIC
+
+
+    temp = os.popen(&#34;vcgencmd measure_temp&#34;).readline()
+    data[&#34;temp&#34;] = temp
+    status = pijuice.status.GetStatus()
+    if(status[&#34;error&#34;] != &#34;NO_ERROR&#34;):
+        print(&#34;Error while getting pijuice status&#34; + str(status[&#34;error&#34;]))
+        return status[&#34;error&#34;], Status.HTTP_SERVER_ERROR;
+
+    charge = pijuice.status.GetChargeLevel()
+    if(charge[&#34;error&#34;] != &#34;NO_ERROR&#34;):
+        print(&#34;Error while getting pijuice status&#34; + str(charge[&#34;error&#34;]))
+        return charge[&#34;error&#34;], Status.HTTP_SERVER_ERROR;
+    charging = &#34;true&#34; if (status[&#34;data&#34;][&#34;powerInput&#34;] == &#34;PRESENT&#34;) else &#34;false&#34;
+    data[&#34;battery&#34;][&#34;value&#34;] = str(charge[&#34;data&#34;]);
+    data[&#34;battery&#34;][&#34;charging&#34;] = charging
+
+    return jsonify(data), Status.HTTP_OK_BASIC
+
+
+
+@app.route(&#39;/api/updateDeviceVoltages&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+@jwt_required
+def updateAllDevices():
+    &#34;&#34;&#34;
+        ### API Path   `/api/updateDeviceVoltages`
+        ### Request Type: `POST`
+        Updates the voltage of a List of supply devices.
+        The deviceids, type of the device and desired voltage must be sent in the post body.
+        e.g. Sets voltage of Varsupply-1 and 2
+        ### POST Body
+        ```
+        [
+            { &#34;type&#34; = &#34;varsupply&#34;,
+              &#34;id&#34; = 1,
+              &#34;desiredVoltage&#34; = 2.5
+            },
+            { &#34;type&#34; = &#34;varsupply&#34;,
+              &#34;id&#34; = 2,
+              &#34;desiredVoltage&#34; = 1.8
+            }
+        ]
+        ```
+    &#34;&#34;&#34;
+    logger.debug(json.dumps(request.get_json(), indent=2, sort_keys=False))
+    logger.info(json.dumps(request.get_json(), indent=2, sort_keys=False))
+    params = request.get_json()
+    for dev in params:
+        try:
+            if(not _setVoltageOnDevice(dev[&#34;enabled&#34;], dev[&#34;type&#34;], dev[&#34;id&#34;], dev[&#34;desiredVoltage&#34;])):
+                return &#34;Device not found or voltage not valid&#34;, Status.HTTP_BAD_REQUEST
+        except KeyError as e:
+            logger.error(str(e))
+            return &#34;An internal error ocurred &#34; + str(e), Status.HTTP_BAD_REQUEST
+        except ValueError as e:
+            logger.error(str(e))
+            return &#34;Invalid Value: &#34; + str(e), Status.HTTP_BAD_REQUEST
+
+    return &#39;Voltages Set&#39;, Status.HTTP_OK_BASIC
+
+
+
+@app.route(&#39;/api/setVoltageOnDevice/&lt;deviceType&gt;/&lt;deviceNumber&gt;/&lt;voltage&gt;&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def setVoltageOnDevice(deviceType, deviceNumber, voltage):
+    &#34;&#34;&#34;
+    ### API Path   `/api/setVoltageOnDevice/&lt;deviceType&gt;/&lt;deviceNumber&gt;/&lt;voltage&gt;`
+    ### Request Type: `GET`
+    Sets the value of one Voltage supply. Mostly used internally. recommended to use /api/updateDeviceVoltages &#34;&#34;&#34;
+    try:
+        if(not _setVoltageOnDevice(True, deviceType, deviceNumber, voltage, False)):
+            return &#34;Device not found or voltage not valid&#34;, Status.HTTP_BAD_REQUEST
+
+    except KeyError as e:
+        logger.error(str(e))
+        return &#34;An internal error ocurred &#34; + str(e), Status.HTTP_BAD_REQUEST
+    except ValueError as e:
+        logger.error(str(e))
+        return &#34;Invalid Value: &#34; + str(e), Status.HTTP_BAD_REQUEST
+
+    return &#34;Voltage Set successfully&#34;, Status.HTTP_OK_BASIC
+
+
+@app.route(&#39;/api/shutdown&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+@jwt_required
+def shutdown():
+    &#34;&#34;&#34;
+    ### API Path   `/api/shutdown`
+    ### Request Type: `GET`
+    Shuts the device down &#34;&#34;&#34;
+    # Shutting down$
+    if(simul):
+        return &#34;Shuting down...&#34;, Status.HTTP_OK_BASIC
+    command = &#34;/usr/bin/sudo /sbin/shutdown now&#34;
+    import subprocess
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    return output, Status.HTTP_OK_BASIC
+
+
+@app.route(&#39;/api/updateGeneralSettings&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+@jwt_required
+def updateGeneralSettings():
+    &#34;&#34;&#34;
+    ### API Path   `/api/updateGeneralSettings`
+    ### Request Type: `POST`
+    Changes general settings. Currently only brightness is possible &#34;&#34;&#34;
+    logger.debug(json.dumps(request.get_json(), indent=2, sort_keys=False))
+    params = request.get_json()
+    if(simul):
+        return &#39;Simulation&#39;, Status.HTTP_OK_BASIC;
+
+    brightness = int(params[&#34;brightness&#34;])
+
+    if(brightness &gt; 255 or brightness &lt; 0):
+        return &#34;Invalid Range for brightness&#34;, Status.HTTP_BAD_REQUEST
+
+    backlight.set_brightness(brightness)
+
+    return &#39;Changes Applied&#39;, Status.HTTP_OK_BASIC
+
+@app.route(&#39;/api/storeImage&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def storeImage():
+    &#34;&#34;&#34;
+    ### API Path   `/api/storeImage`
+    ### Request Type: `POST`
+    Stores a base64 string as image locally on the Demonstrator
+    ###Post Body:
+    ```
+    image: &lt;base64DecodedImage&gt;
+    ```
+    &#34;&#34;&#34;
+    # Todo security
+    params = request.get_json()
+    import base64
+    print(params[&#34;image&#34;][22:])
+    imgdata = base64.b64decode(params[&#34;image&#34;][22:])
+    filename = &#34;export_&#34; + str(datetime.now().strftime(&#39;%Y%m-%d%H-%M%S&#39;)) + &#34;.png&#34;
+    file = os.path.join(EXPORT_FOLDER, filename)
+    with open(file, &#39;wb&#39;) as f:
+        f.write(imgdata)
+    return &#34;OK&#34;, Status.HTTP_OK_BASIC
+
+
+@app.route(&#39;/api/storeCsv&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def storeCsv():
+    &#34;&#34;&#34;
+    ### API Path   `/api/storeCsv`
+    ### Request Type: `POST`
+    Stores the content of the request as .csv file
+    ###Post Body:
+    ```
+    &lt;csvContent&gt;
+    ```
+    &#34;&#34;&#34;
+    # Todo security
+    params = request.get_json()
+    filename = &#34;export_&#34; + str(datetime.now().strftime(&#39;%Y%m-%d%H-%M%S&#39;)) + &#34;.csv&#34;
+    file = os.path.join(EXPORT_FOLDER, filename)
+    maxcount = len(params.keys())
+    count = 0
+    keys = params.keys();
+
+    with open(file, &#39;w&#39;) as f:
+        for dataId in keys:
+            f.write(dataId)
+            count += 1
+            if(count != maxcount):
+                f.write(&#34;,&#34;)
+        f.write(&#34;;\n&#34;)
+        for i in range(len(list(params.values())[0])):
+            count = 0
+            for key in keys:
+                f.write(str(params[key][i]))
+                count += 1
+                if(count != maxcount):
+                    f.write(&#34;,&#34;)
+            f.write(&#34;;\n&#34;)
+
+    # for i in range(0, len(params.s())):
+    return &#34;OK&#34;, Status.HTTP_OK_BASIC
+
+
+
+#-------------------------------------------------------------------------------
+#                      END API FUNCTIONS
+#-------------------------------------------------------------------------------
+
+class PollingThread(threading.Thread):
+    &#34;&#34;&#34;
+    Thread that continually updates voltage values.
+    Stores them in VoltageValues object.
+    &#34;&#34;&#34;
+
+    def __init__ (self, devices, interval, threadId):
+        threading.Thread.__init__(self)
+        self.devices = devices
+        self.interval = interval
+        self.threadId = threadId
+        self.daemon = True # Please kill our thread, when server is not running anymore
+
+    # def run2(self):
+    #
+    #    while True:
+    #      for dev in self.devices:
+    #          voltageValues[dev.getName()] = str(dev.getVoltage()) # store voltage values in object.
+    #          time.sleep(0.1)
+    #
+    #      time.sleep(self.interval)
+
+
+    def run(self):
+        &#34;&#34;&#34; Collects a predifined amount of sample values from all devices specifed in the devices variable, supplied by the constructor.
+            Than averages it and stores the average in the global Conf Object.
+            After that, the thread waits for a given time specified in the interval variable.
+        &#34;&#34;&#34;
+        loops = 5
+
+        while True:
+            try:
+                # reset sum values
+                for dev in self.devices:
+                    voltageValuesSum[dev.getName()] = 0
+
+                for i in range(loops):
+                    for dev in self.devices:
+                        # voltage = dev.getVoltage()
+                        # lastVal = voltage
+                        voltageValuesSum[dev.getName()] += dev.getVoltage()
+
+                for dev in self.devices:
+                    if(voltageValuesSum[dev.getName()] is None):
+                        continue
+
+                    sum = voltageValuesSum[dev.getName()]
+                    average = dev.scaleToResolution(sum/loops)
+                    #   file.write(str(average) + dev.getUnit())
+                    #   file.write(&#34;,&#34;)
+                    # if (dev.getUnit() == &#34;V&#34; and average &gt; 5.5 ):
+                    #      logger.debug(&#34;got weird voltage!&#34;)
+                    #      logger.error(&#34;Got weird voltage!!&#34;)
+                    #      logger.debug(dev.getDebugInfos())
+                    # logger.debug(&#34;got average values for: &#34; + str(dev.getName()) + &#34; av: &#34; + str(average))
+                    voltageValues[dev.getName()][&#34;value&#34;] = str(average) # store voltage values in object.
+                    voltageValues[dev.getName()][&#34;unit&#34;] = dev.getUnit()
+                    voltageValues[dev.getName()][&#34;max&#34;] = dev.getMaxRange()
+
+                    if (dev.autoResolution):
+                        # check if we reached upper resolution
+                        if(dev.reachedResolutionMax(average) and not dev.maxResolution()):
+                            logger.debug(&#34;Reached upper resolution limit&#34;)
+                            currentresolution = dev.resolution
+                            logger.debug(&#34;current  res: &#34; + str(currentresolution))
+                            dev.setResolution(currentresolution + 1)
+                            logger.debug(&#34;changed to next higher resolution range&#34;)
+                        # check for lower resolution
+                        elif(dev.reachedResolutionMin(average) and not dev.minResolution()):
+                            logger.debug(&#34;Reached lower resolution limit&#34;)
+                            currentresolution = dev.resolution
+                            logger.debug(&#34;current  res: &#34; + str(currentresolution))
+                            dev.setResolution(currentresolution-1)
+                            logger.debug(&#34;changed to next lower resolution range&#34;)
+
+            except IOError as e:
+                logger.error(&#34;IO Error in thread&#34;)
+                logger.error(e)
+                # logger.debug(e)
+                # file.write(&#34;got exception&#34;)
+            except ValueError as e:
+                # file.write(&#34;got exception&#34;)
+                logger.error(&#34;Value Error in thread&#34;)
+                logger.error(e)
+                # logger.debug(e)
+            except TypeError as e:
+                # file.write(&#34;got exception&#34;)
+                logger.error(&#34;Type Error in thread&#34;)
+                logger.error(e)
+                # logger.debug(e)
+            except:
+                # file.write(&#34;got exception&#34;)
+                logger.error(&#34;Unexpected error:&#34;)
+                logger.error(str(sys.exc_info()))
+                raise
+            finally:
+                # file.write(&#34;\n&#34;)
+                # file.flush();
+                time.sleep(self.interval)
+
+       # logger.debug(&#34;------------running----------&#34;)
+       # while(True):
+       #     mutex.acquire()
+       #     for dev in self.devices:
+       #           val = dev.getVoltage();
+       #           average= dev.scaleToResolution(val)
+       #           logger.debug(&#34;updatinmg values:&#34; + str(average))
+       #           voltageValues[dev.getName()][&#34;value&#34;] = str(average) # store voltage values in object.
+       #           voltageValues[dev.getName()][&#34;unit&#34;] = dev.getUnit()
+       #           voltageValues[dev.getName()][&#34;max&#34;] = dev.getMaxRange()
+       #           # time.sleep(0.01)
+       #     mutex.release()
+       #     time.sleep(self.interval)
+
+       # loops= 5
+       # waitingTime= 0.01
+       # maxStepAllowed = 0.1
+       # with open(OUTPUT_FILE,&#39;w&#39;) as file:
+       #     for dev in self.devices:
+       #         file.write(dev.getName())
+       #         file.write(&#34;,&#34;)
+       #     file.write(&#34;;\n&#34;)
+       #     file.flush()
+       #     while True:
+       #         try:
+       #             # i=0
+       #             # while i&lt;loops:
+       #             for dev in self.devices:
+       #                 maxStep = 0
+       #                 lastVal = dev.getVoltage()
+       #                 sum = dev.getVoltage()
+       #                 for i in range(loops - 1):
+       #                     # name= dev.getName()
+       #                     voltage=dev.getVoltage()
+       #                     print(str(voltage))
+       #                     maxStep = max(abs(voltage-lastVal), maxStep)
+       #                     lastVal = voltage
+       #                     # if(i==0):
+       #                     #     sum=0
+       #                     # else:
+       #                     #     sum=float(voltageValuesSum[name])
+       #                     sum=sum+voltage
+       #                     # voltageValuesSum[name] = str(sum) # store voltage values in object.
+       #                 if(abs(maxStep) &gt; maxStepAllowed):
+       #                     print(&#34;step to big!&#34;)
+       #                     voltageValuesSum[dev.getName()] = None
+       #                 else:
+       #                      voltageValuesSum[dev.getName()] = str(sum)
+       #                 print(&#34;step:&#34; + str(maxStep))
+       #                 time.sleep(0.0001)
+       #                 # i=i+1
+       #             for dev in self.devices:
+       #                 if(voltageValuesSum[dev.getName()] is None):
+       #                     continue;
+       #                 sum=float(voltageValuesSum[dev.getName()])
+       #                 average= dev.scaleToResolution(sum/loops)
+       #                 file.write(str(average) + dev.getUnit())
+       #                 file.write(&#34;,&#34;)
+       #                 if (dev.getUnit() == &#34;V&#34; and average &gt; 5.5 ):
+       #                     logger.debug(&#34;got weird voltage!&#34;)
+       #                     logger.error(&#34;Got weird voltage!!&#34;)
+       #                     logger.debug(dev.getDebugInfos())
+       #                 logger.debug(&#34;got average values for: &#34; + str(dev.getName()) + &#34; av: &#34; + str(average))
+       #                 voltageValues[dev.getName()][&#34;value&#34;] = str(average) # store voltage values in object.
+       #                 voltageValues[dev.getName()][&#34;unit&#34;] = dev.getUnit()
+       #                 voltageValues[dev.getName()][&#34;max&#34;] = dev.getMaxRange()
+       #
+       #                 if(dev.autoResolution):
+       #                     if(dev.reachedResolutionMax(average) and not dev.maxResolution()):
+       #                         logger.debug(&#34;Reached upper resolution limit&#34;)
+       #                         currentresolution=dev.resolution
+       #                         logger.debug(&#34;current  res: &#34; + str(currentresolution))
+       #                         dev.setResolution(currentresolution+1)
+       #                         logger.debug(&#34;changed to next higher resolution range&#34;)
+       #
+       #                     elif(dev.reachedResolutionMin(average) and not dev.minResolution()):
+       #                         logger.debug(&#34;Reached lower resolution limit&#34;)
+       #                         currentresolution=dev.resolution
+       #                         logger.debug(&#34;current  res: &#34; + str(currentresolution))
+       #                         dev.setResolution(currentresolution-1)
+       #                         logger.debug(&#34;changed to next lower resolution range&#34;)
+       #
+       #         except IOError as e:
+       #              logger.error(&#34;IO Error in thread&#34;)
+       #              logger.error(e)
+       #              logger.debug(e)
+       #              file.write(&#34;got exception&#34;)
+       #         except ValueError as e:
+       #              file.write(&#34;got exception&#34;)
+       #              logger.error(&#34;Value Error in thread&#34;)
+       #              logger.error(e)
+       #              logger.debug(e)
+       #         except TypeError as e:
+       #              file.write(&#34;got exception&#34;)
+       #              logger.error(&#34;Type Error in thread&#34;)
+       #              logger.error(e)
+       #              logger.debug(e)
+       #         except:
+       #              file.write(&#34;got exception&#34;)
+       #              logger.error(&#34;Unexpected error:&#34;)
+       #              logger.error(str(sys.exc_info()))
+       #              raise
+       #         finally:
+       #              file.write(&#34;\n&#34;)
+       #              file.flush();
+       #              time.sleep(self.interval)
+       #
+
+
+
+
+
+def _setVoltageOnDevice(enabled, deviceType, deviceNumber, voltage, updateConfig = True):
+    &#34;&#34;&#34; private function. Used to change voltage of a device.  &lt;br&gt;
+    Set updateConfig to false, if you do not want to store the changes.
+    &#34;&#34;&#34;
+    logger.info(&#39;setVoltageOnDevice &#39; + deviceType + &#34; : &#34; + deviceNumber + &#34;:&#34; + str(voltage) + &#34;v&#34;)
+    voltage = float(voltage)
+    voltageSet = False
+
+    if (deviceType == &#34;VarSupply&#34;):
+        if deviceNumber in varSupplies.keys():
+            if (not enabled):
+                varSupplies[deviceNumber].disable()
+            else:
+                varSupplies[deviceNumber].setVoltage(voltage)
+            voltageSet = True
+
+    elif (deviceType == &#34;PrecisionSupply&#34;):
+        devId = &#34;PS&#34; + deviceNumber
+        if devId in LTCDevices.keys():
+            if (not enabled):
+                LTCDevices[devId].disable()
+            else:
+                LTCDevices[devId].setVoltage(voltage)
+            voltageSet = True
+
+    elif (deviceType == &#34;BodyBias&#34;):
+        if deviceNumber in LTCDevices.keys():
+            if (not enabled):
+                LTCDevices[deviceNumber].disable()
+            else:
+                LTCDevices[deviceNumber].setVoltage(abs(voltage))
+            voltageSet = True
+
+    try:
+        #get the old/stored values
+        config_object = getConfigObject()
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error);
+        return False
+
+    devices = config_object[&#34;supplies&#34;]
+
+    for dev in devices:
+        if(dev[&#34;type&#34;] == deviceType and dev[&#34;id&#34;] == deviceNumber):
+            dev[&#34;currentVoltage&#34;] = voltage
+            dev[&#34;enabled&#34;] = enabled
+            if (&#34;maxFix&#34; in dev.keys()):
+                dev[&#34;maxValueChecked&#34;] = (voltage == dev[&#34;maxFix&#34;])
+            #if(deviceType == &#34;VarSupply&#34; )
+
+    try:
+        storeConfigObject(config_object)
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error)
+        return False
+
+    return voltageSet
+
+
+def init():
+    &#34;&#34;&#34;
+    Sets up initial values. &lt;br&gt;
+    Reads current settings stored in config file. &lt;br&gt;
+    Sets all supplies to the values specified in config file and sets resolution of measurement devices.    &lt;br&gt;
+    ### Raises IoError if config is not found
+    &#34;&#34;&#34;
+
+    #get the stored values
+    config_object = getConfigObject()
+
+    # Set resolutions of measurements
+    for dev in  config_object[&#34;devices&#34;]:
+        id = dev[&#34;deviceId&#34;]
+        if(id in measurementDevices.keys()):
+            measurementDevices[id].setResolution(int(dev[&#34;currentResolution&#34;]))
+            measurementDevices[id].setAutoResolution(int(dev[&#34;autoResolution&#34;]))
+
+    # Set supply voltages
+    for dev in config_object[&#34;supplies&#34;]:
+        try:
+            if not _setVoltageOnDevice(dev[&#34;enabled&#34;], dev[&#34;type&#34;], dev[&#34;id&#34;], dev[&#34;currentVoltage&#34;]):
+                logger.error(&#34;Device not found or voltage not valid&#34; + str(dev))
+        except KeyError as e:
+            logger.error(str(e))
+        except ValueError as e:
+            logger.error(str(e))
+
+
+
+def main():
+    &#34;&#34;&#34;Main entry point of the app. &lt;br&gt;
+    Starts local server and sets values stored in the conf.json file.
+    &#34;&#34;&#34;
+    # logger.info(&#34;Beginning main&#34;)
+
+    init()
+    logger.info(&#34;starting server&#34;)
+
+    voltagePoller = PollingThread(measurementDevices.values(), pollingTimeDelay, &#34;Thread 1&#34;)
+    logger.debug(&#34;starting polling thread&#34;)
+    voltagePoller.start()
+    logger.debug(&#34;Thread started&#34;)
+    logger.debug(&#34;count: &#34; + str(threading.active_count() ))
+    try:
+        app.run(host = app.config[&#34;IP&#34;], port = app.config[&#34;PORT&#34;])
+        logger.info(&#34;Server started. IP: &#34; + str(app.config[&#34;IP&#34;]) + &#34; Port: &#34; + str(app.config[&#34;PORT&#34;]))
+
+        logger.debug(&#34;count: &#34; + str(threading.active_count() ))
+
+    except Exception as exc:
+        logger.error(exc)
+        logger.exception(traceback.format_exc())
+    finally:
+        pass
+
+
+def storeConfigObject(confObj):
+    &#34;&#34;&#34; Takes a Object and dumps it as JSON in the CONF_FILE&#34;&#34;&#34;
+    with open(CONF_FILE,&#39;w&#39;) as file:
+        file.write(json.dumps(confObj, indent=2, sort_keys=False))
+
+
+
+def getConfigObject():
+    &#34;&#34;&#34; Reads the content of the CONF_FILE and converts it to a json Objects. Returns the object.&#34;&#34;&#34;
+    with open(CONF_FILE,&#39;r&#39;) as file:
+        string = file.read()
+        return json.loads(string)
+
+    return &#39;{msg: &#34;could not load file&#34;}&#39;
+
+
+# def createContinuesVideoStream():
+#     while True:
+#         ret, frame = cap.read()
+#
+#         yield (b&#39;--frame\r\n&#39;
+#                b&#39;Content-Type: image/jpeg\r\n\r\n&#39; + cv2.imencode(&#39;.jpg&#39;, frame)[1].tobytes() + b&#39;\r\n&#39;)
+#
+# @app.route(&#39;/api/video_feed&#39;)
+# @crossdomain(origin=&#39;*&#39;)
+# def video_feed():
+#     return Response(createContinuesVideoStream(),mimetype=&#39;multipart/x-mixed-replace; boundary=frame&#39;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="flask_app.server.add_claims_to_access_token"><code class="name flex">
+<span>def <span class="ident">add_claims_to_access_token</span></span>(<span>identity)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@jwt.jwt_data_loader
+def add_claims_to_access_token(identity):
+    now = datetime.utcnow()
+    return {
+        &#39;exp&#39;: now + current_app.config[&#39;JWT_EXPIRES&#39;],
+        &#39;iat&#39;: now,
+        &#39;nbf&#39;: now,
+        &#39;sub&#39;: identity,
+        &#39;roles&#39;: &#39;Admin&#39;
+    }</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.crossdomain"><code class="name flex">
+<span>def <span class="ident">crossdomain</span></span>(<span>origin=None, methods=None, headers=None, max_age=21600, attach_to_all=True, automatic_options=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Decorator function that allows crossdomain requests.
+Courtesy of
+<a href="https://blog.skyred.fi/articles/better-crossdomain-snippet-for-flask.html">https://blog.skyred.fi/articles/better-crossdomain-snippet-for-flask.html</a></p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def crossdomain(origin=None, methods=None, headers=None, max_age=21600,
+                attach_to_all=True, automatic_options=True):
+    &#34;&#34;&#34;Decorator function that allows crossdomain requests.
+      Courtesy of
+      https://blog.skyred.fi/articles/better-crossdomain-snippet-for-flask.html
+    &#34;&#34;&#34;
+    if methods is not None:
+        methods = &#39;, &#39;.join(sorted(x.upper() for x in methods))
+    # use str instead of basestring if using Python 3.x
+    if headers is not None and not isinstance(headers, list):
+        headers = &#39;, &#39;.join(x.upper() for x in headers)
+    # use str instead of basestring if using Python 3.x
+    if not isinstance(origin, list):
+        origin = &#39;, &#39;.join(origin)
+    if isinstance(max_age, timedelta):
+        max_age = max_age.total_seconds()
+
+    def get_methods():
+        &#34;&#34;&#34; Determines which methods are allowed
+        &#34;&#34;&#34;
+        if methods is not None:
+            return methods
+
+        options_resp = current_app.make_default_options_response()
+        return options_resp.headers[&#39;allow&#39;]
+
+    def decorator(f):
+        &#34;&#34;&#34;The decorator function
+        &#34;&#34;&#34;
+        def wrapped_function(*args, **kwargs):
+            &#34;&#34;&#34;Caries out the actual cross domain code
+            &#34;&#34;&#34;
+            if automatic_options and request.method == &#39;OPTIONS&#39;:
+                resp = current_app.make_default_options_response()
+            else:
+                resp = make_response(f(*args, **kwargs))
+            if not attach_to_all and request.method != &#39;OPTIONS&#39;:
+                return resp
+
+            h = resp.headers
+            h[&#39;Access-Control-Allow-Origin&#39;] = origin
+            h[&#39;Access-Control-Allow-Methods&#39;] = get_methods()
+            h[&#39;Access-Control-Max-Age&#39;] = str(max_age)
+            h[&#39;Access-Control-Allow-Credentials&#39;] = &#39;true&#39;
+            h[&#39;Access-Control-Allow-Headers&#39;] = \
+                &#34;Origin, X-Requested-With, Content-Type, Accept, Authorization&#34;
+            if headers is not None:
+                h[&#39;Access-Control-Allow-Headers&#39;] = headers
+            return resp
+
+        f.provide_automatic_options = False
+        return update_wrapper(wrapped_function, f)
+    return decorator</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.getConfigObject"><code class="name flex">
+<span>def <span class="ident">getConfigObject</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Reads the content of the CONF_FILE and converts it to a json Objects. Returns the object.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def getConfigObject():
+    &#34;&#34;&#34; Reads the content of the CONF_FILE and converts it to a json Objects. Returns the object.&#34;&#34;&#34;
+    with open(CONF_FILE,&#39;r&#39;) as file:
+        string = file.read()
+        return json.loads(string)
+
+    return &#39;{msg: &#34;could not load file&#34;}&#39;</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.getSystemInfos"><code class="name flex">
+<span>def <span class="ident">getSystemInfos</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apigetsysteminfos">API Path
+<code>/api/getSystemInfos</code></h3>
+<h3 id="request-type-get">Request Type: <code>GET</code></h3>
+<p>Return information about the system.</p>
+<h3 id="returns">Returns:</h3>
+<pre><code>{
+    battery: {
+        value: &lt;value&gt;,
+        charging: &lt;bool&gt;
+    },
+    temp: &lt;string&gt;
+}
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/getSystemInfos&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def getSystemInfos():
+    &#34;&#34;&#34;
+    ### API Path   `/api/getSystemInfos`
+    ### Request Type: `GET`
+    Return information about the system.
+    ###Returns:
+    ```
+    {
+        battery: {
+            value: &lt;value&gt;,
+            charging: &lt;bool&gt;
+        },
+        temp: &lt;string&gt;
+    }
+    ```
+    &#34;&#34;&#34;
+
+    data = {}
+
+    data[&#34;battery&#34;] = {}
+    # return (temp.replace(&#34;temp=&#34;,&#34;&#34;))
+    if(simul):
+        data[&#34;battery&#34;][&#34;value&#34;] = &#34;33&#34;
+        data[&#34;battery&#34;][&#34;charging&#34;] = &#34;false&#34;
+        data[&#34;temp&#34;] = &#34;12C&#34;
+        return jsonify(data), Status.HTTP_OK_BASIC
+
+
+    temp = os.popen(&#34;vcgencmd measure_temp&#34;).readline()
+    data[&#34;temp&#34;] = temp
+    status = pijuice.status.GetStatus()
+    if(status[&#34;error&#34;] != &#34;NO_ERROR&#34;):
+        print(&#34;Error while getting pijuice status&#34; + str(status[&#34;error&#34;]))
+        return status[&#34;error&#34;], Status.HTTP_SERVER_ERROR;
+
+    charge = pijuice.status.GetChargeLevel()
+    if(charge[&#34;error&#34;] != &#34;NO_ERROR&#34;):
+        print(&#34;Error while getting pijuice status&#34; + str(charge[&#34;error&#34;]))
+        return charge[&#34;error&#34;], Status.HTTP_SERVER_ERROR;
+    charging = &#34;true&#34; if (status[&#34;data&#34;][&#34;powerInput&#34;] == &#34;PRESENT&#34;) else &#34;false&#34;
+    data[&#34;battery&#34;][&#34;value&#34;] = str(charge[&#34;data&#34;]);
+    data[&#34;battery&#34;][&#34;charging&#34;] = charging
+
+    return jsonify(data), Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.init"><code class="name flex">
+<span>def <span class="ident">init</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Sets up initial values. <br>
+Reads current settings stored in config file. <br>
+Sets all supplies to the values specified in config file and sets resolution of measurement devices.
+<br></p>
+<h3 id="raises-ioerror-if-config-is-not-found">Raises IoError if config is not found</h3></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def init():
+    &#34;&#34;&#34;
+    Sets up initial values. &lt;br&gt;
+    Reads current settings stored in config file. &lt;br&gt;
+    Sets all supplies to the values specified in config file and sets resolution of measurement devices.    &lt;br&gt;
+    ### Raises IoError if config is not found
+    &#34;&#34;&#34;
+
+    #get the stored values
+    config_object = getConfigObject()
+
+    # Set resolutions of measurements
+    for dev in  config_object[&#34;devices&#34;]:
+        id = dev[&#34;deviceId&#34;]
+        if(id in measurementDevices.keys()):
+            measurementDevices[id].setResolution(int(dev[&#34;currentResolution&#34;]))
+            measurementDevices[id].setAutoResolution(int(dev[&#34;autoResolution&#34;]))
+
+    # Set supply voltages
+    for dev in config_object[&#34;supplies&#34;]:
+        try:
+            if not _setVoltageOnDevice(dev[&#34;enabled&#34;], dev[&#34;type&#34;], dev[&#34;id&#34;], dev[&#34;currentVoltage&#34;]):
+                logger.error(&#34;Device not found or voltage not valid&#34; + str(dev))
+        except KeyError as e:
+            logger.error(str(e))
+        except ValueError as e:
+            logger.error(str(e))</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.loadConfig"><code class="name flex">
+<span>def <span class="ident">loadConfig</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apiloadconfig">API Path
+<code>/api/loadconfig</code></h3>
+<h3 id="request-type-get">Request Type: <code>GET</code></h3>
+<p>Loads the configuration specified in the CONF_FILE file.
+Returns a JSON Object with all Configurations that are defined.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/loadconfig&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+def loadConfig():
+    &#34;&#34;&#34;
+    ### API Path   `/api/loadconfig`
+    ### Request Type: `GET`
+    Loads the configuration specified in the CONF_FILE file.
+    Returns a JSON Object with all Configurations that are defined.&#34;&#34;&#34;
+    try:
+        with open(CONF_FILE,&#39;r&#39;) as file:
+            return file.read(), Status.HTTP_OK_BASIC
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error)
+        return error, Status.HTTP_SERVER_ERROR;
+
+    return &#34;Unknown Error&#34;, Status.HTTP_SERVER_ERROR;</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.login"><code class="name flex">
+<span>def <span class="ident">login</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apilogin">API Path
+<code>/api/login</code></h3>
+<h3 id="request-type-post">Request Type: <code>POST</code></h3>
+<p>Logs in an user. checks if the password supplied in the json body matches the pincode.
+If Login is successfully returns a jwt token used to authenticate the user.
+JSON Format:</p>
+<h3 id="post-body">POST Body</h3>
+<pre><code>{
+    password:&lt;string&gt;
+}
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/login&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+def login():
+    &#34;&#34;&#34;
+        ### API Path   `/api/login`
+        ### Request Type: `POST`
+        Logs in an user. checks if the password supplied in the json body matches the pincode.
+        If Login is successfully returns a jwt token used to authenticate the user.
+        JSON Format:
+        ### POST Body
+        ```
+        {
+            password:&lt;string&gt;
+        }
+        ```
+    &#34;&#34;&#34;
+    params = request.get_json()
+    password = params.get(&#39;password&#39;, None)
+
+    #Check if inputs are valid
+    if not password:
+        logger.info(&#39;Password not set!&#39;)
+        return jsonify({&#34;msg&#34;: &#34;Missing Pincode parameter&#34;}), Status.HTTP_BAD_REQUEST
+
+    if password != pinCode:
+        logger.info(&#39;Pincode was wrong&#39;)
+        return jsonify({&#34;msg&#34;: &#34;Wrong Pincode&#34;}), Status.HTTP_BAD_UNAUTHORIZED
+
+    token = {&#39;jwt&#39;: create_jwt(identity=&#34;admin&#34;), &#39;exp&#39;: datetime.utcnow() + current_app.config[&#39;JWT_EXPIRES&#39;]}
+        # id: number;
+        # username: string;
+        # password: string;
+        # firstName: string;
+        # lastName: string;
+        # token?: string;
+    ret = {&#34;id&#34;: &#34;NewUser&#34;, &#34;token&#34;: token}
+
+    logger.info(&#39;Login successfully &#39; + str(ret))
+    return jsonify(ret), Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.logout"><code class="name flex">
+<span>def <span class="ident">logout</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apilogout">API Path
+<code>/api/logout</code></h3>
+<h3 id="request-type-post">Request Type: <code>POST</code></h3>
+<p>Logs out an user, JWT Token must be set, otherwise Token invalid is returned</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#34;/api/logout&#34;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@jwt_required
+@crossdomain(origin=&#39;*&#39;)
+def logout():
+    &#34;&#34;&#34;
+    ### API Path   `/api/logout`
+    ### Request Type: `POST`
+    Logs out an user, JWT Token must be set, otherwise Token invalid is returned
+    &#34;&#34;&#34;
+    identity = get_jwt_identity()
+    if not identity:
+        return jsonify({&#34;msg&#34;: &#34;Token invalid&#34;}), Status.HTTP_BAD_UNAUTHORIZED
+    logger.info(&#39;Logged out user !!&#39;)
+    return &#39;logged out successfully&#39;, Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Main entry point of the app. <br>
+Starts local server and sets values stored in the conf.json file.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def main():
+    &#34;&#34;&#34;Main entry point of the app. &lt;br&gt;
+    Starts local server and sets values stored in the conf.json file.
+    &#34;&#34;&#34;
+    # logger.info(&#34;Beginning main&#34;)
+
+    init()
+    logger.info(&#34;starting server&#34;)
+
+    voltagePoller = PollingThread(measurementDevices.values(), pollingTimeDelay, &#34;Thread 1&#34;)
+    logger.debug(&#34;starting polling thread&#34;)
+    voltagePoller.start()
+    logger.debug(&#34;Thread started&#34;)
+    logger.debug(&#34;count: &#34; + str(threading.active_count() ))
+    try:
+        app.run(host = app.config[&#34;IP&#34;], port = app.config[&#34;PORT&#34;])
+        logger.info(&#34;Server started. IP: &#34; + str(app.config[&#34;IP&#34;]) + &#34; Port: &#34; + str(app.config[&#34;PORT&#34;]))
+
+        logger.debug(&#34;count: &#34; + str(threading.active_count() ))
+
+    except Exception as exc:
+        logger.error(exc)
+        logger.exception(traceback.format_exc())
+    finally:
+        pass</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.setVoltageOnDevice"><code class="name flex">
+<span>def <span class="ident">setVoltageOnDevice</span></span>(<span>deviceType, deviceNumber, voltage)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apisetvoltageondeviceltdevicetypegtltdevicenumbergtltvoltagegt">API Path
+<code>/api/setVoltageOnDevice/&lt;deviceType&gt;/&lt;deviceNumber&gt;/&lt;voltage&gt;</code></h3>
+<h3 id="request-type-get">Request Type: <code>GET</code></h3>
+<p>Sets the value of one Voltage supply. Mostly used internally. recommended to use /api/updateDeviceVoltages</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/setVoltageOnDevice/&lt;deviceType&gt;/&lt;deviceNumber&gt;/&lt;voltage&gt;&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def setVoltageOnDevice(deviceType, deviceNumber, voltage):
+    &#34;&#34;&#34;
+    ### API Path   `/api/setVoltageOnDevice/&lt;deviceType&gt;/&lt;deviceNumber&gt;/&lt;voltage&gt;`
+    ### Request Type: `GET`
+    Sets the value of one Voltage supply. Mostly used internally. recommended to use /api/updateDeviceVoltages &#34;&#34;&#34;
+    try:
+        if(not _setVoltageOnDevice(True, deviceType, deviceNumber, voltage, False)):
+            return &#34;Device not found or voltage not valid&#34;, Status.HTTP_BAD_REQUEST
+
+    except KeyError as e:
+        logger.error(str(e))
+        return &#34;An internal error ocurred &#34; + str(e), Status.HTTP_BAD_REQUEST
+    except ValueError as e:
+        logger.error(str(e))
+        return &#34;Invalid Value: &#34; + str(e), Status.HTTP_BAD_REQUEST
+
+    return &#34;Voltage Set successfully&#34;, Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.shutdown"><code class="name flex">
+<span>def <span class="ident">shutdown</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apishutdown">API Path
+<code>/api/shutdown</code></h3>
+<h3 id="request-type-get">Request Type: <code>GET</code></h3>
+<p>Shuts the device down</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/shutdown&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+@jwt_required
+def shutdown():
+    &#34;&#34;&#34;
+    ### API Path   `/api/shutdown`
+    ### Request Type: `GET`
+    Shuts the device down &#34;&#34;&#34;
+    # Shutting down$
+    if(simul):
+        return &#34;Shuting down...&#34;, Status.HTTP_OK_BASIC
+    command = &#34;/usr/bin/sudo /sbin/shutdown now&#34;
+    import subprocess
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    return output, Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.storeConfig"><code class="name flex">
+<span>def <span class="ident">storeConfig</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apistoreconfig">API Path
+<code>/api/storeconfig</code></h3>
+<h3 id="request-type-post">Request Type: <code>POST</code></h3>
+<p>Stores the given JSON Object in the Config file specifed by the
+CONF_FILE variable.
+If the JWT Cookie is not set, this method will return Status Code 401 UNAUTHORIZED.
+Return Status Code 500 if the file could not be opened.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/storeconfig&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+@jwt_required
+def storeConfig():
+    &#34;&#34;&#34;
+        ### API Path   `/api/storeconfig`
+        ### Request Type: `POST`
+        Stores the given JSON Object in the Config file specifed by the  CONF_FILE variable.
+        If the JWT Cookie is not set, this method will return Status Code 401 UNAUTHORIZED.
+        Return Status Code 500 if the file could not be opened.
+    &#34;&#34;&#34;
+    try:
+        storeConfigObject(request.get_json())
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error)
+        return error , Status.HTTP_SERVER_ERROR;
+
+    return &#34;OK&#34;, Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.storeConfigObject"><code class="name flex">
+<span>def <span class="ident">storeConfigObject</span></span>(<span>confObj)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Takes a Object and dumps it as JSON in the CONF_FILE</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def storeConfigObject(confObj):
+    &#34;&#34;&#34; Takes a Object and dumps it as JSON in the CONF_FILE&#34;&#34;&#34;
+    with open(CONF_FILE,&#39;w&#39;) as file:
+        file.write(json.dumps(confObj, indent=2, sort_keys=False))</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.storeCsv"><code class="name flex">
+<span>def <span class="ident">storeCsv</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apistorecsv">API Path
+<code>/api/storeCsv</code></h3>
+<h3 id="request-type-post">Request Type: <code>POST</code></h3>
+<p>Stores the content of the request as .csv file</p>
+<h3 id="post-body">Post Body:</h3>
+<pre><code>&lt;csvContent&gt;
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/storeCsv&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def storeCsv():
+    &#34;&#34;&#34;
+    ### API Path   `/api/storeCsv`
+    ### Request Type: `POST`
+    Stores the content of the request as .csv file
+    ###Post Body:
+    ```
+    &lt;csvContent&gt;
+    ```
+    &#34;&#34;&#34;
+    # Todo security
+    params = request.get_json()
+    filename = &#34;export_&#34; + str(datetime.now().strftime(&#39;%Y%m-%d%H-%M%S&#39;)) + &#34;.csv&#34;
+    file = os.path.join(EXPORT_FOLDER, filename)
+    maxcount = len(params.keys())
+    count = 0
+    keys = params.keys();
+
+    with open(file, &#39;w&#39;) as f:
+        for dataId in keys:
+            f.write(dataId)
+            count += 1
+            if(count != maxcount):
+                f.write(&#34;,&#34;)
+        f.write(&#34;;\n&#34;)
+        for i in range(len(list(params.values())[0])):
+            count = 0
+            for key in keys:
+                f.write(str(params[key][i]))
+                count += 1
+                if(count != maxcount):
+                    f.write(&#34;,&#34;)
+            f.write(&#34;;\n&#34;)
+
+    # for i in range(0, len(params.s())):
+    return &#34;OK&#34;, Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.storeImage"><code class="name flex">
+<span>def <span class="ident">storeImage</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apistoreimage">API Path
+<code>/api/storeImage</code></h3>
+<h3 id="request-type-post">Request Type: <code>POST</code></h3>
+<p>Stores a base64 string as image locally on the Demonstrator</p>
+<h3 id="post-body">Post Body:</h3>
+<pre><code>image: &lt;base64DecodedImage&gt;
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/storeImage&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def storeImage():
+    &#34;&#34;&#34;
+    ### API Path   `/api/storeImage`
+    ### Request Type: `POST`
+    Stores a base64 string as image locally on the Demonstrator
+    ###Post Body:
+    ```
+    image: &lt;base64DecodedImage&gt;
+    ```
+    &#34;&#34;&#34;
+    # Todo security
+    params = request.get_json()
+    import base64
+    print(params[&#34;image&#34;][22:])
+    imgdata = base64.b64decode(params[&#34;image&#34;][22:])
+    filename = &#34;export_&#34; + str(datetime.now().strftime(&#39;%Y%m-%d%H-%M%S&#39;)) + &#34;.png&#34;
+    file = os.path.join(EXPORT_FOLDER, filename)
+    with open(file, &#39;wb&#39;) as f:
+        f.write(imgdata)
+    return &#34;OK&#34;, Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.updateAllDevices"><code class="name flex">
+<span>def <span class="ident">updateAllDevices</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apiupdatedevicevoltages">API Path
+<code>/api/updateDeviceVoltages</code></h3>
+<h3 id="request-type-post">Request Type: <code>POST</code></h3>
+<p>Updates the voltage of a List of supply devices.
+The deviceids, type of the device and desired voltage must be sent in the post body.
+e.g. Sets voltage of Varsupply-1 and 2</p>
+<h3 id="post-body">POST Body</h3>
+<pre><code>[
+    { &quot;type&quot; = &quot;varsupply&quot;,
+      &quot;id&quot; = 1,
+      &quot;desiredVoltage&quot; = 2.5
+    },
+    { &quot;type&quot; = &quot;varsupply&quot;,
+      &quot;id&quot; = 2,
+      &quot;desiredVoltage&quot; = 1.8
+    }
+]
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/updateDeviceVoltages&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+@jwt_required
+def updateAllDevices():
+    &#34;&#34;&#34;
+        ### API Path   `/api/updateDeviceVoltages`
+        ### Request Type: `POST`
+        Updates the voltage of a List of supply devices.
+        The deviceids, type of the device and desired voltage must be sent in the post body.
+        e.g. Sets voltage of Varsupply-1 and 2
+        ### POST Body
+        ```
+        [
+            { &#34;type&#34; = &#34;varsupply&#34;,
+              &#34;id&#34; = 1,
+              &#34;desiredVoltage&#34; = 2.5
+            },
+            { &#34;type&#34; = &#34;varsupply&#34;,
+              &#34;id&#34; = 2,
+              &#34;desiredVoltage&#34; = 1.8
+            }
+        ]
+        ```
+    &#34;&#34;&#34;
+    logger.debug(json.dumps(request.get_json(), indent=2, sort_keys=False))
+    logger.info(json.dumps(request.get_json(), indent=2, sort_keys=False))
+    params = request.get_json()
+    for dev in params:
+        try:
+            if(not _setVoltageOnDevice(dev[&#34;enabled&#34;], dev[&#34;type&#34;], dev[&#34;id&#34;], dev[&#34;desiredVoltage&#34;])):
+                return &#34;Device not found or voltage not valid&#34;, Status.HTTP_BAD_REQUEST
+        except KeyError as e:
+            logger.error(str(e))
+            return &#34;An internal error ocurred &#34; + str(e), Status.HTTP_BAD_REQUEST
+        except ValueError as e:
+            logger.error(str(e))
+            return &#34;Invalid Value: &#34; + str(e), Status.HTTP_BAD_REQUEST
+
+    return &#39;Voltages Set&#39;, Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.updateChartconfig"><code class="name flex">
+<span>def <span class="ident">updateChartconfig</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apiupdatechartconfig">API Path
+<code>/api/update/chartConfig</code></h3>
+<pre><code>### Request Type: `POST`
+Updates the device Config stored in the CONF_FILE.
+Make sure that the JSON Object supplied in the body matches the specification for a Chart config.
+### POST Body
+```
+[
+</code></pre>
+<p>{
+"name": "Voltage chart",
+"col": {
+"sm": 12,
+"md": 12,
+"lg": 6,
+"xs": 12
+},
+"datasets": [
+{
+"name": "Voltage vm1",
+"autoLabel": true,
+"negRange": false,
+"chartDataset": {
+"currValue": 3.15,
+"borderColor": "#0618f9",
+"fill": false,
+"yAxisID": "yAxis1",
+"label": "Voltage vm1[V]"
+},
+"borderColor": "#2196f3",
+"customDataHandlerEnabled": false,
+"unit": "V",
+"handler": "",
+"datasetId": "ADS1dataset",
+"sourceId": "vm1",
+"autoRange": true
+},
+{
+"name": "Voltage vm2",
+"negRange": false,
+"chartDataset": {
+"currValue": 4.28,
+"borderColor": "#44a0bb",
+"fill": false,
+"yAxisID": "yAxis2",
+"label": "Voltage vm2[V]"
+},
+"lineColor": "#ff0000",
+"autoLabel": true,
+"customDataHandlerEnabled": false,
+"unit": "V",
+"handler": "",
+"datasetId": "ADS2dataset",
+"sourceId": "vm2",
+"autoRange": true
+}
+],
+"axes": [
+{
+"position": "left",
+"id": "yAxis1"
+},
+{
+"position": "right",
+"id": "yAxis2"
+}
+],
+"maxValues": 40,
+"chartId": "Chart#1"
+},
+{
+"name": "Current Chart",
+"col": {
+"sm": 12,
+"md": 12,
+"lg": 6,
+"xs": 12
+},
+"datasets": [
+{
+"name": "Current [cm3]",
+"autoLabel": true,
+"chartDataset": {
+"yAxisID": "leftAxis",
+"lineColor": "#2196f3",
+"label": "Current [cm3][uA]",
+"currValue": 193.87,
+"borderColor": "#e03105",
+"fill": false
+},
+"lineColor": "#2196f3",
+"customDataHandlerEnabled": false,
+"unit": "uA",
+"handler": "",
+"sourceId": "cm3",
+"autoRange": true
+},
+{
+"name": "Current [cm4]",
+"autoLabel": true,
+"chartDataset": {
+"currValue": 335.78,
+"borderColor": "#d89552",
+"fill": false,
+"yAxisID": "rightAxis",
+"label": "Current [cm4][uA]"
+},
+"customDataHandlerEnabled": false,
+"unit": "uA",
+"handler": "",
+"datasetId": "dataset-1558781553872",
+"sourceId": "cm4",
+"autoRange": true
+}
+],
+"axes": [
+{
+"position": "left",
+"id": "leftAxis"
+},
+{
+"position": "right",
+"id": "rightAxis"
+}
+],
+"maxValues": 40,
+"chartId": "Chart#2"
+}
+]
+```</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/update/chartConfig&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+@jwt_required
+def updateChartconfig():
+    &#34;&#34;&#34;
+    ### API Path   `/api/update/chartConfig`
+    ### Request Type: `POST`
+    Updates the device Config stored in the CONF_FILE.
+    Make sure that the JSON Object supplied in the body matches the specification for a Chart config.
+    ### POST Body
+    ```
+    [
+  {
+    &#34;name&#34;: &#34;Voltage chart&#34;,
+    &#34;col&#34;: {
+      &#34;sm&#34;: 12,
+      &#34;md&#34;: 12,
+      &#34;lg&#34;: 6,
+      &#34;xs&#34;: 12
+    },
+    &#34;datasets&#34;: [
+      {
+        &#34;name&#34;: &#34;Voltage vm1&#34;,
+        &#34;autoLabel&#34;: true,
+        &#34;negRange&#34;: false,
+        &#34;chartDataset&#34;: {
+          &#34;currValue&#34;: 3.15,
+          &#34;borderColor&#34;: &#34;#0618f9&#34;,
+          &#34;fill&#34;: false,
+          &#34;yAxisID&#34;: &#34;yAxis1&#34;,
+          &#34;label&#34;: &#34;Voltage vm1[V]&#34;
+        },
+        &#34;borderColor&#34;: &#34;#2196f3&#34;,
+        &#34;customDataHandlerEnabled&#34;: false,
+        &#34;unit&#34;: &#34;V&#34;,
+        &#34;handler&#34;: &#34;&#34;,
+        &#34;datasetId&#34;: &#34;ADS1dataset&#34;,
+        &#34;sourceId&#34;: &#34;vm1&#34;,
+        &#34;autoRange&#34;: true
+      },
+      {
+        &#34;name&#34;: &#34;Voltage vm2&#34;,
+        &#34;negRange&#34;: false,
+        &#34;chartDataset&#34;: {
+          &#34;currValue&#34;: 4.28,
+          &#34;borderColor&#34;: &#34;#44a0bb&#34;,
+          &#34;fill&#34;: false,
+          &#34;yAxisID&#34;: &#34;yAxis2&#34;,
+          &#34;label&#34;: &#34;Voltage vm2[V]&#34;
+        },
+        &#34;lineColor&#34;: &#34;#ff0000&#34;,
+        &#34;autoLabel&#34;: true,
+        &#34;customDataHandlerEnabled&#34;: false,
+        &#34;unit&#34;: &#34;V&#34;,
+        &#34;handler&#34;: &#34;&#34;,
+        &#34;datasetId&#34;: &#34;ADS2dataset&#34;,
+        &#34;sourceId&#34;: &#34;vm2&#34;,
+        &#34;autoRange&#34;: true
+      }
+    ],
+    &#34;axes&#34;: [
+      {
+        &#34;position&#34;: &#34;left&#34;,
+        &#34;id&#34;: &#34;yAxis1&#34;
+      },
+      {
+        &#34;position&#34;: &#34;right&#34;,
+        &#34;id&#34;: &#34;yAxis2&#34;
+      }
+    ],
+    &#34;maxValues&#34;: 40,
+    &#34;chartId&#34;: &#34;Chart#1&#34;
+  },
+  {
+    &#34;name&#34;: &#34;Current Chart&#34;,
+    &#34;col&#34;: {
+      &#34;sm&#34;: 12,
+      &#34;md&#34;: 12,
+      &#34;lg&#34;: 6,
+      &#34;xs&#34;: 12
+    },
+    &#34;datasets&#34;: [
+      {
+        &#34;name&#34;: &#34;Current [cm3]&#34;,
+        &#34;autoLabel&#34;: true,
+        &#34;chartDataset&#34;: {
+          &#34;yAxisID&#34;: &#34;leftAxis&#34;,
+          &#34;lineColor&#34;: &#34;#2196f3&#34;,
+          &#34;label&#34;: &#34;Current [cm3][uA]&#34;,
+          &#34;currValue&#34;: 193.87,
+          &#34;borderColor&#34;: &#34;#e03105&#34;,
+          &#34;fill&#34;: false
+        },
+        &#34;lineColor&#34;: &#34;#2196f3&#34;,
+        &#34;customDataHandlerEnabled&#34;: false,
+        &#34;unit&#34;: &#34;uA&#34;,
+        &#34;handler&#34;: &#34;&#34;,
+        &#34;sourceId&#34;: &#34;cm3&#34;,
+        &#34;autoRange&#34;: true
+      },
+      {
+        &#34;name&#34;: &#34;Current [cm4]&#34;,
+        &#34;autoLabel&#34;: true,
+        &#34;chartDataset&#34;: {
+          &#34;currValue&#34;: 335.78,
+          &#34;borderColor&#34;: &#34;#d89552&#34;,
+          &#34;fill&#34;: false,
+          &#34;yAxisID&#34;: &#34;rightAxis&#34;,
+          &#34;label&#34;: &#34;Current [cm4][uA]&#34;
+        },
+        &#34;customDataHandlerEnabled&#34;: false,
+        &#34;unit&#34;: &#34;uA&#34;,
+        &#34;handler&#34;: &#34;&#34;,
+        &#34;datasetId&#34;: &#34;dataset-1558781553872&#34;,
+        &#34;sourceId&#34;: &#34;cm4&#34;,
+        &#34;autoRange&#34;: true
+      }
+    ],
+    &#34;axes&#34;: [
+      {
+        &#34;position&#34;: &#34;left&#34;,
+        &#34;id&#34;: &#34;leftAxis&#34;
+      },
+      {
+        &#34;position&#34;: &#34;right&#34;,
+        &#34;id&#34;: &#34;rightAxis&#34;
+      }
+    ],
+    &#34;maxValues&#34;: 40,
+    &#34;chartId&#34;: &#34;Chart#2&#34;
+  }
+]
+    ```
+    &#34;&#34;&#34;
+    params = request.get_json()
+    print(json.dumps(params, indent=2, sort_keys=False))
+    try:
+        config_object = getConfigObject()
+        config_object[&#39;charts&#39;] = params
+        storeConfigObject(config_object)
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error);
+        return error , Status.HTTP_SERVER_ERROR;
+
+    return &#34;OK&#34;, 200;</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.updateDevs"><code class="name flex">
+<span>def <span class="ident">updateDevs</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apiupdatemeasurementdevices">API Path
+<code>/api/update/measurementDevices</code></h3>
+<h3 id="request-type-post">Request Type: <code>POST</code></h3>
+<p>Updates the configiruation of the measurements devices supplied in the requests body. <br>
+JSON Body must follow the following format:</p>
+<h3 id="post-body">POST Body</h3>
+<pre><code>[
+ {
+  &quot;deviceId&quot;:&lt;String&gt;,
+  &quot;currentResolution&quot;:&lt;int&gt;,
+  &quot;desiredResolution&quot;:&lt;int&gt;,
+  &quot;autoResolution&quot;:&lt;true|false&gt;
+ }
+]
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/update/measurementDevices&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin = &#39;*&#39;)
+@jwt_required
+def updateDevs():
+    &#34;&#34;&#34;
+    ### API Path   `/api/update/measurementDevices`
+    ### Request Type: `POST`
+    Updates the configiruation of the measurements devices supplied in the requests body. &lt;br&gt;
+    JSON Body must follow the following format:
+    ### POST Body
+    ```
+    [
+     {
+      &#34;deviceId&#34;:&lt;String&gt;,
+      &#34;currentResolution&#34;:&lt;int&gt;,
+      &#34;desiredResolution&#34;:&lt;int&gt;,
+      &#34;autoResolution&#34;:&lt;true|false&gt;
+     }
+    ]
+    ```
+    &#34;&#34;&#34;
+    #params are the new values
+    params = request.get_json()
+
+    try:
+        #get the old/stored values
+        config_object = getConfigObject()
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error);
+        return error , Status.HTTP_SERVER_ERROR;
+
+    devices = config_object[&#34;devices&#34;]
+    logger.debug(&#34;Got Params:&#34;)
+    logger.debug(json.dumps(params, indent=2, sort_keys=False))
+
+    for dev in params:
+        try:
+            id = dev[&#34;deviceId&#34;]
+            if(id in measurementDevices.keys()): #check whether id is valid
+                oldResolution=dev[&#34;currentResolution&#34;]
+                newResolution=dev[&#34;desiredResolution&#34;]
+                newautoResolution=dev[&#34;autoResolution&#34;]
+                measurementDevices[id].setResolution(int(newResolution))
+                measurementDevices[id].setAutoResolution(bool(newautoResolution))
+
+                for dev in devices:
+                    if (dev[&#34;deviceId&#34;] == id):
+                        dev[&#34;currentResolution&#34;] = int(newResolution) #müsste das nicht ein string sein???
+                        dev[&#34;autoResolution&#34;]=bool(newautoResolution)
+            else:
+                logger.error(&#34;Device &#34; + str(id) + &#34; not found&#34;)
+                return &#34;Device &#34; + str(id) + &#34; not found&#34;, Status.HTTP_BAD_REQUEST
+        except ValueError as e:
+            logger.error(str(e))
+            return str(e), Status.HTTP_BAD_REQUEST
+
+
+
+    try:
+        storeConfigObject(config_object)
+    except IOError as e:
+        error = &#34;I/O Error &#34; + str(e.errno) + &#34; &#34; + str(e.strerror)
+        logger.error(error)
+        return error , Status.HTTP_SERVER_ERROR
+
+
+    return &#34;&#34; , Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.updateGeneralSettings"><code class="name flex">
+<span>def <span class="ident">updateGeneralSettings</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apiupdategeneralsettings">API Path
+<code>/api/updateGeneralSettings</code></h3>
+<h3 id="request-type-post">Request Type: <code>POST</code></h3>
+<p>Changes general settings. Currently only brightness is possible</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/updateGeneralSettings&#39;, methods=[&#39;POST&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+@jwt_required
+def updateGeneralSettings():
+    &#34;&#34;&#34;
+    ### API Path   `/api/updateGeneralSettings`
+    ### Request Type: `POST`
+    Changes general settings. Currently only brightness is possible &#34;&#34;&#34;
+    logger.debug(json.dumps(request.get_json(), indent=2, sort_keys=False))
+    params = request.get_json()
+    if(simul):
+        return &#39;Simulation&#39;, Status.HTTP_OK_BASIC;
+
+    brightness = int(params[&#34;brightness&#34;])
+
+    if(brightness &gt; 255 or brightness &lt; 0):
+        return &#34;Invalid Range for brightness&#34;, Status.HTTP_BAD_REQUEST
+
+    backlight.set_brightness(brightness)
+
+    return &#39;Changes Applied&#39;, Status.HTTP_OK_BASIC</code></pre>
+</details>
+</dd>
+<dt id="flask_app.server.voltageUpdate"><code class="name flex">
+<span>def <span class="ident">voltageUpdate</span></span>(<span>deviceId)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="api-path-apivoltageupdateltdeviceidgt">API Path
+<code>/api/voltageUpdate/&lt;deviceId&gt;</code></h3>
+<h3 id="request-type-get">Request Type: <code>GET</code></h3>
+<p>Requests the curremt voltage/Current for a device.
+<deviceId> must match the deviceId whose value we want to know (e.g VM1, CM3).
+If ALL is used as Device Id, all Values will be returned</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@app.route(&#39;/api/voltageUpdate/&lt;deviceId&gt;&#39;, methods=[&#39;GET&#39;, &#39;OPTIONS&#39;])
+@crossdomain(origin=&#39;*&#39;)
+def voltageUpdate(deviceId):
+    &#34;&#34;&#34;
+    ### API Path   `/api/voltageUpdate/&lt;deviceId&gt;`
+    ### Request Type: `GET`
+    Requests the curremt voltage/Current for a device.
+    &lt;deviceId&gt; must match the deviceId whose value we want to know (e.g VM1, CM3).
+    If ALL is used as Device Id, all Values will be returned&#34;&#34;&#34;
+    logger.info(&#39;Volt update requested for device id: &#39; + deviceId)
+
+    if(deviceId == &#34;ALL&#34;):
+        mutex.acquire()
+        ret = jsonify(voltageValues)
+        mutex.release()
+        return ret, Status.HTTP_OK_BASIC
+
+    try:
+        mutex.acquire()
+        ret = voltageValues[deviceId]
+        mutex.release()
+        return ret, Status.HTTP_OK_BASIC
+
+    except KeyError:
+        return &#34;Device Id not Found&#34;, Status.HTTP_BAD_REQUEST</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="flask_app.server.PollingThread"><code class="flex name class">
+<span>class <span class="ident">PollingThread</span></span>
+<span>(</span><span>devices, interval, threadId)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Thread that continually updates voltage values.
+Stores them in VoltageValues object.</p>
+<p>This constructor should always be called with keyword arguments. Arguments are:</p>
+<p><em>group</em> should be None; reserved for future extension when a ThreadGroup
+class is implemented.</p>
+<p><em>target</em> is the callable object to be invoked by the run()
+method. Defaults to None, meaning nothing is called.</p>
+<p><em>name</em> is the thread name. By default, a unique name is constructed of
+the form "Thread-N" where N is a small decimal number.</p>
+<p><em>args</em> is the argument tuple for the target invocation. Defaults to ().</p>
+<p><em>kwargs</em> is a dictionary of keyword arguments for the target
+invocation. Defaults to {}.</p>
+<p>If a subclass overrides the constructor, it must make sure to invoke
+the base class constructor (Thread.<strong>init</strong>()) before doing anything
+else to the thread.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class PollingThread(threading.Thread):
+    &#34;&#34;&#34;
+    Thread that continually updates voltage values.
+    Stores them in VoltageValues object.
+    &#34;&#34;&#34;
+
+    def __init__ (self, devices, interval, threadId):
+        threading.Thread.__init__(self)
+        self.devices = devices
+        self.interval = interval
+        self.threadId = threadId
+        self.daemon = True # Please kill our thread, when server is not running anymore
+
+    # def run2(self):
+    #
+    #    while True:
+    #      for dev in self.devices:
+    #          voltageValues[dev.getName()] = str(dev.getVoltage()) # store voltage values in object.
+    #          time.sleep(0.1)
+    #
+    #      time.sleep(self.interval)
+
+
+    def run(self):
+        &#34;&#34;&#34; Collects a predifined amount of sample values from all devices specifed in the devices variable, supplied by the constructor.
+            Than averages it and stores the average in the global Conf Object.
+            After that, the thread waits for a given time specified in the interval variable.
+        &#34;&#34;&#34;
+        loops = 5
+
+        while True:
+            try:
+                # reset sum values
+                for dev in self.devices:
+                    voltageValuesSum[dev.getName()] = 0
+
+                for i in range(loops):
+                    for dev in self.devices:
+                        # voltage = dev.getVoltage()
+                        # lastVal = voltage
+                        voltageValuesSum[dev.getName()] += dev.getVoltage()
+
+                for dev in self.devices:
+                    if(voltageValuesSum[dev.getName()] is None):
+                        continue
+
+                    sum = voltageValuesSum[dev.getName()]
+                    average = dev.scaleToResolution(sum/loops)
+                    #   file.write(str(average) + dev.getUnit())
+                    #   file.write(&#34;,&#34;)
+                    # if (dev.getUnit() == &#34;V&#34; and average &gt; 5.5 ):
+                    #      logger.debug(&#34;got weird voltage!&#34;)
+                    #      logger.error(&#34;Got weird voltage!!&#34;)
+                    #      logger.debug(dev.getDebugInfos())
+                    # logger.debug(&#34;got average values for: &#34; + str(dev.getName()) + &#34; av: &#34; + str(average))
+                    voltageValues[dev.getName()][&#34;value&#34;] = str(average) # store voltage values in object.
+                    voltageValues[dev.getName()][&#34;unit&#34;] = dev.getUnit()
+                    voltageValues[dev.getName()][&#34;max&#34;] = dev.getMaxRange()
+
+                    if (dev.autoResolution):
+                        # check if we reached upper resolution
+                        if(dev.reachedResolutionMax(average) and not dev.maxResolution()):
+                            logger.debug(&#34;Reached upper resolution limit&#34;)
+                            currentresolution = dev.resolution
+                            logger.debug(&#34;current  res: &#34; + str(currentresolution))
+                            dev.setResolution(currentresolution + 1)
+                            logger.debug(&#34;changed to next higher resolution range&#34;)
+                        # check for lower resolution
+                        elif(dev.reachedResolutionMin(average) and not dev.minResolution()):
+                            logger.debug(&#34;Reached lower resolution limit&#34;)
+                            currentresolution = dev.resolution
+                            logger.debug(&#34;current  res: &#34; + str(currentresolution))
+                            dev.setResolution(currentresolution-1)
+                            logger.debug(&#34;changed to next lower resolution range&#34;)
+
+            except IOError as e:
+                logger.error(&#34;IO Error in thread&#34;)
+                logger.error(e)
+                # logger.debug(e)
+                # file.write(&#34;got exception&#34;)
+            except ValueError as e:
+                # file.write(&#34;got exception&#34;)
+                logger.error(&#34;Value Error in thread&#34;)
+                logger.error(e)
+                # logger.debug(e)
+            except TypeError as e:
+                # file.write(&#34;got exception&#34;)
+                logger.error(&#34;Type Error in thread&#34;)
+                logger.error(e)
+                # logger.debug(e)
+            except:
+                # file.write(&#34;got exception&#34;)
+                logger.error(&#34;Unexpected error:&#34;)
+                logger.error(str(sys.exc_info()))
+                raise
+            finally:
+                # file.write(&#34;\n&#34;)
+                # file.flush();
+                time.sleep(self.interval)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>threading.Thread</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="flask_app.server.PollingThread.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Collects a predifined amount of sample values from all devices specifed in the devices variable, supplied by the constructor.
+Than averages it and stores the average in the global Conf Object.
+After that, the thread waits for a given time specified in the interval variable.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def run(self):
+    &#34;&#34;&#34; Collects a predifined amount of sample values from all devices specifed in the devices variable, supplied by the constructor.
+        Than averages it and stores the average in the global Conf Object.
+        After that, the thread waits for a given time specified in the interval variable.
+    &#34;&#34;&#34;
+    loops = 5
+
+    while True:
+        try:
+            # reset sum values
+            for dev in self.devices:
+                voltageValuesSum[dev.getName()] = 0
+
+            for i in range(loops):
+                for dev in self.devices:
+                    # voltage = dev.getVoltage()
+                    # lastVal = voltage
+                    voltageValuesSum[dev.getName()] += dev.getVoltage()
+
+            for dev in self.devices:
+                if(voltageValuesSum[dev.getName()] is None):
+                    continue
+
+                sum = voltageValuesSum[dev.getName()]
+                average = dev.scaleToResolution(sum/loops)
+                #   file.write(str(average) + dev.getUnit())
+                #   file.write(&#34;,&#34;)
+                # if (dev.getUnit() == &#34;V&#34; and average &gt; 5.5 ):
+                #      logger.debug(&#34;got weird voltage!&#34;)
+                #      logger.error(&#34;Got weird voltage!!&#34;)
+                #      logger.debug(dev.getDebugInfos())
+                # logger.debug(&#34;got average values for: &#34; + str(dev.getName()) + &#34; av: &#34; + str(average))
+                voltageValues[dev.getName()][&#34;value&#34;] = str(average) # store voltage values in object.
+                voltageValues[dev.getName()][&#34;unit&#34;] = dev.getUnit()
+                voltageValues[dev.getName()][&#34;max&#34;] = dev.getMaxRange()
+
+                if (dev.autoResolution):
+                    # check if we reached upper resolution
+                    if(dev.reachedResolutionMax(average) and not dev.maxResolution()):
+                        logger.debug(&#34;Reached upper resolution limit&#34;)
+                        currentresolution = dev.resolution
+                        logger.debug(&#34;current  res: &#34; + str(currentresolution))
+                        dev.setResolution(currentresolution + 1)
+                        logger.debug(&#34;changed to next higher resolution range&#34;)
+                    # check for lower resolution
+                    elif(dev.reachedResolutionMin(average) and not dev.minResolution()):
+                        logger.debug(&#34;Reached lower resolution limit&#34;)
+                        currentresolution = dev.resolution
+                        logger.debug(&#34;current  res: &#34; + str(currentresolution))
+                        dev.setResolution(currentresolution-1)
+                        logger.debug(&#34;changed to next lower resolution range&#34;)
+
+        except IOError as e:
+            logger.error(&#34;IO Error in thread&#34;)
+            logger.error(e)
+            # logger.debug(e)
+            # file.write(&#34;got exception&#34;)
+        except ValueError as e:
+            # file.write(&#34;got exception&#34;)
+            logger.error(&#34;Value Error in thread&#34;)
+            logger.error(e)
+            # logger.debug(e)
+        except TypeError as e:
+            # file.write(&#34;got exception&#34;)
+            logger.error(&#34;Type Error in thread&#34;)
+            logger.error(e)
+            # logger.debug(e)
+        except:
+            # file.write(&#34;got exception&#34;)
+            logger.error(&#34;Unexpected error:&#34;)
+            logger.error(str(sys.exc_info()))
+            raise
+        finally:
+            # file.write(&#34;\n&#34;)
+            # file.flush();
+            time.sleep(self.interval)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="flask_app" href="index.html">flask_app</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="flask_app.server.add_claims_to_access_token" href="#flask_app.server.add_claims_to_access_token">add_claims_to_access_token</a></code></li>
+<li><code><a title="flask_app.server.crossdomain" href="#flask_app.server.crossdomain">crossdomain</a></code></li>
+<li><code><a title="flask_app.server.getConfigObject" href="#flask_app.server.getConfigObject">getConfigObject</a></code></li>
+<li><code><a title="flask_app.server.getSystemInfos" href="#flask_app.server.getSystemInfos">getSystemInfos</a></code></li>
+<li><code><a title="flask_app.server.init" href="#flask_app.server.init">init</a></code></li>
+<li><code><a title="flask_app.server.loadConfig" href="#flask_app.server.loadConfig">loadConfig</a></code></li>
+<li><code><a title="flask_app.server.login" href="#flask_app.server.login">login</a></code></li>
+<li><code><a title="flask_app.server.logout" href="#flask_app.server.logout">logout</a></code></li>
+<li><code><a title="flask_app.server.main" href="#flask_app.server.main">main</a></code></li>
+<li><code><a title="flask_app.server.setVoltageOnDevice" href="#flask_app.server.setVoltageOnDevice">setVoltageOnDevice</a></code></li>
+<li><code><a title="flask_app.server.shutdown" href="#flask_app.server.shutdown">shutdown</a></code></li>
+<li><code><a title="flask_app.server.storeConfig" href="#flask_app.server.storeConfig">storeConfig</a></code></li>
+<li><code><a title="flask_app.server.storeConfigObject" href="#flask_app.server.storeConfigObject">storeConfigObject</a></code></li>
+<li><code><a title="flask_app.server.storeCsv" href="#flask_app.server.storeCsv">storeCsv</a></code></li>
+<li><code><a title="flask_app.server.storeImage" href="#flask_app.server.storeImage">storeImage</a></code></li>
+<li><code><a title="flask_app.server.updateAllDevices" href="#flask_app.server.updateAllDevices">updateAllDevices</a></code></li>
+<li><code><a title="flask_app.server.updateChartconfig" href="#flask_app.server.updateChartconfig">updateChartconfig</a></code></li>
+<li><code><a title="flask_app.server.updateDevs" href="#flask_app.server.updateDevs">updateDevs</a></code></li>
+<li><code><a title="flask_app.server.updateGeneralSettings" href="#flask_app.server.updateGeneralSettings">updateGeneralSettings</a></code></li>
+<li><code><a title="flask_app.server.voltageUpdate" href="#flask_app.server.voltageUpdate">voltageUpdate</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="flask_app.server.PollingThread" href="#flask_app.server.PollingThread">PollingThread</a></code></h4>
+<ul class="">
+<li><code><a title="flask_app.server.PollingThread.run" href="#flask_app.server.PollingThread.run">run</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.6.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<h2>Login</h2>
+<style>
+  /* The Modal (background) */
+  .modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+  }
+
+  .table>tbody>tr>td,
+  .table>tbody>tr>th,
+  .table>tfoot>tr>td,
+  .table>tfoot>tr>th,
+  .table>thead>tr>td,
+  .table>thead>tr>th {
+    padding: 4px;
+  }
+
+  /* Modal Content/Box */
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 1% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    /* Could be more or less, depending on screen size */
+    max-width: 300px;
+  }
+
+  td {
+    width: 0.1% !important;
+    white-space: nowrap !important;
+  }
+
+  td button {
+    width: 70px;
+    height: 50px;
+  }
+</style>
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="password">Pin Code</label>
+
+        <div class="input-group">
+          <input type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+
+          <div class="input-group-btn">
+            <button type="button" (click)="removeLastNumber()" [disabled]="isEmpty" class="btn btn-primary"><i class="fas fa-backspace"></i></button>
+
+          </div><!-- /btn-group -->
+        </div><!-- /input-group -->
+        <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+          <div *ngIf="f.password.errors.required">Password is required</div>
+        </div>
+      </div>
+      <div class="number-input" style="align:center; text-align:center;">
+        <table class="table">
+
+          <tbody>
+            <tr>
+
+              <td> <button type="button" (click)="onClickMe(1)" [disabled]="loading" class="btn btn-primary">1</button></td>
+              <td> <button type="button" (click)="onClickMe(2)" [disabled]="loading" class="btn btn-primary">2</button></td>
+              <td> <button type="button" (click)="onClickMe(3)" [disabled]="loading" class="btn btn-primary">3</button></td>
+            </tr>
+            <tr>
+
+              <td> <button type="button" (click)="onClickMe(4)" [disabled]="loading" class="btn btn-primary">4</button></td>
+              <td> <button type="button" (click)="onClickMe(5)" [disabled]="loading" class="btn btn-primary">5</button></td>
+              <td> <button type="button" (click)="onClickMe(6)" [disabled]="loading" class="btn btn-primary">6</button></td>
+            </tr>
+            <tr>
+
+              <td> <button type="button" (click)="onClickMe(7)" [disabled]="loading" class="btn btn-primary">7</button></td>
+              <td> <button type="button" (click)="onClickMe(8)" [disabled]="loading" class="btn btn-primary">8</button></td>
+              <td> <button type="button" (click)="onClickMe(9)" [disabled]="loading" class="btn btn-primary">9</button></td>
+            </tr>
+
+            <tr>
+
+              <td> </td>
+              <td> <button type="button" (click)="onClickMe(0)" [disabled]="loading" class="btn btn-primary" style="float:right">0</button></td>
+              <td> </td>
+            </tr>
+            <tr>
+              <td><button [disabled]="loading" type="button" (click)="goBack()" class="btn btn-danger">Zurück</button> </td>
+              <td> </td>
+              <td>
+                <div class="form-group">
+                  <button [disabled]="loading" class="btn btn-primary">Login</button>
+                  <img *ngIf="loading" class="pl-2"
+                    src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+    </form>
+  </div>
+
+</div>

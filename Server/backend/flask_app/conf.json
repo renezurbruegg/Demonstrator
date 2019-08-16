@@ -1,0 +1,328 @@
+{
+  "supplies": [
+    {
+      "name": "BodyBiasingPos",
+      "type": "BodyBias",
+      "stepSize": 0.005,
+      "currentVoltage": 2,
+      "unit": "V",
+      "maxValue": 2.5,
+      "minValue": 0,
+      "enabled": true,
+      "id": "BBP"
+    },
+    {
+      "name": "BodyBiasingNeg",
+      "type": "BodyBias",
+      "stepSize": 0.005,
+      "currentVoltage": -2,
+      "unit": "V",
+      "maxValue": 0,
+      "minValue": -2.5,
+      "enabled": true,
+      "id": "BBN"
+    },
+    {
+      "name": "VarSupply1",
+      "type": "VarSupply",
+      "stepSize": 0.1,
+      "maxFix": 3.5,
+      "currentVoltage": 2,
+      "unit": "V",
+      "maxValue": 3.2,
+      "minValue": 1.8,
+      "enabled": true,
+      "id": "1"
+    },
+    {
+      "name": "VarSupply2",
+      "type": "VarSupply",
+      "stepSize": 0.1,
+      "maxFix": 3.5,
+      "currentVoltage": 2,
+      "unit": "V",
+      "maxValue": 3.2,
+      "minValue": 1.8,
+      "enabled": true,
+      "id": "2"
+    },
+    {
+      "name": "VarSupply3",
+      "type": "VarSupply",
+      "stepSize": 0.1,
+      "maxFix": 3.5,
+      "currentVoltage": 2,
+      "unit": "V",
+      "maxValue": 3.2,
+      "minValue": 1.8,
+      "enabled": true,
+      "id": "3"
+    },
+    {
+      "name": "PrecisionSupply1",
+      "type": "PrecisionSupply",
+      "stepSize": 0.005,
+      "currentVoltage": 2,
+      "unit": "V",
+      "maxValue": 5,
+      "minValue": 0,
+      "enabled": true,
+      "id": "1"
+    },
+    {
+      "name": "PrecisionSupply2",
+      "type": "PrecisionSupply",
+      "stepSize": 0.005,
+      "currentVoltage": 2,
+      "unit": "V",
+      "maxValue": 5,
+      "minValue": 0,
+      "enabled": true,
+      "id": "2"
+    }
+  ],
+  "charts": [
+    {
+      "name": "Voltage chart",
+      "col": {
+        "sm": 12,
+        "md": 12,
+        "lg": 6,
+        "xs": 12
+      },
+      "datasets": [
+        {
+          "name": "Voltage vm1",
+          "autoLabel": true,
+          "negRange": false,
+          "chartDataset": {
+            "currValue": 3.15,
+            "borderColor": "#0618f9",
+            "fill": false,
+            "yAxisID": "yAxis1",
+            "label": "Voltage vm1[V]"
+          },
+          "borderColor": "#2196f3",
+          "customDataHandlerEnabled": false,
+          "unit": "V",
+          "handler": "",
+          "datasetId": "ADS1dataset",
+          "sourceId": "vm1",
+          "autoRange": true
+        },
+        {
+          "name": "Voltage vm2",
+          "negRange": false,
+          "chartDataset": {
+            "currValue": 4.28,
+            "borderColor": "#44a0bb",
+            "fill": false,
+            "yAxisID": "yAxis2",
+            "label": "Voltage vm2[V]"
+          },
+          "lineColor": "#ff0000",
+          "autoLabel": true,
+          "customDataHandlerEnabled": false,
+          "unit": "V",
+          "handler": "",
+          "datasetId": "ADS2dataset",
+          "sourceId": "vm2",
+          "autoRange": true
+        }
+      ],
+      "axes": [
+        {
+          "position": "left",
+          "id": "yAxis1"
+        },
+        {
+          "position": "right",
+          "id": "yAxis2"
+        }
+      ],
+      "maxValues": 40,
+      "chartId": "Chart#1"
+    },
+    {
+      "name": "Current Chart",
+      "col": {
+        "sm": 12,
+        "md": 12,
+        "lg": 6,
+        "xs": 12
+      },
+      "datasets": [
+        {
+          "name": "Current [cm3]",
+          "autoLabel": true,
+          "chartDataset": {
+            "yAxisID": "leftAxis",
+            "lineColor": "#2196f3",
+            "label": "Current [cm3][uA]",
+            "currValue": 193.87,
+            "borderColor": "#e03105",
+            "fill": false
+          },
+          "lineColor": "#2196f3",
+          "customDataHandlerEnabled": false,
+          "unit": "uA",
+          "handler": "",
+          "sourceId": "cm3",
+          "autoRange": true
+        },
+        {
+          "name": "Current [cm4]",
+          "autoLabel": true,
+          "chartDataset": {
+            "currValue": 335.78,
+            "borderColor": "#d89552",
+            "fill": false,
+            "yAxisID": "rightAxis",
+            "label": "Current [cm4][uA]"
+          },
+          "customDataHandlerEnabled": false,
+          "unit": "uA",
+          "handler": "",
+          "datasetId": "dataset-1558781553872",
+          "sourceId": "cm4",
+          "autoRange": true
+        }
+      ],
+      "axes": [
+        {
+          "position": "left",
+          "id": "leftAxis"
+        },
+        {
+          "position": "right",
+          "id": "rightAxis"
+        }
+      ],
+      "maxValues": 40,
+      "chartId": "Chart#2"
+    },
+    {
+      "name": "Power [vm1 * cm3]",
+      "col": {
+        "sm": 12,
+        "md": 12,
+        "lg": 6,
+        "xs": 12
+      },
+      "datasets": [
+        {
+          "name": "Power",
+          "autoLabel": false,
+          "chartDataset": {
+            "currValue": 0.61,
+            "borderColor": "#d5da05",
+            "fill": false,
+            "yAxisID": "laxis",
+            "label": "Power"
+          },
+          "customDataHandlerEnabled": true,
+          "unit": "mW",
+          "handler": "(scaleToSiUnit(data['vm1']) * scaleToSiUnit(data['cm3'])) * 1000;",
+          "datasetId": "dataset-1558781788201",
+          "sourceId": "vm1",
+          "autoRange": false
+        }
+      ],
+      "axes": [
+        {
+          "position": "left",
+          "id": "laxis"
+        }
+      ],
+      "maxValues": 40,
+      "chartId": "Chart#3"
+    }
+  ],
+  "devices": [
+    {
+      "name": "ADS1",
+      "type": "voltage",
+      "autoResolution": false,
+      "deviceId": "vm1",
+      "currentResolution": 3
+    },
+    {
+      "name": "ADS2",
+      "type": "voltage",
+      "autoResolution": false,
+      "deviceId": "vm2",
+      "currentResolution": 3
+    },
+    {
+      "name": "ADS3",
+      "type": "current",
+      "autoResolution": false,
+      "deviceId": "cm3",
+      "currentResolution": 1
+    },
+    {
+      "name": "ADS4",
+      "type": "current",
+      "autoResolution": false,
+      "deviceId": "cm4",
+      "currentResolution": 1
+    }
+  ],
+  "general": {
+    "timerInterval": 500,
+    "chartOptions": {
+      "scales": {
+        "yAxes": [
+          {
+            "position": "left",
+            "type": "linear",
+            "id": "Left"
+          },
+          {
+            "position": "right",
+            "type": "linear",
+            "id": "Right"
+          }
+        ],
+        "xAxes": [
+          {
+            "ticks": {
+              "fontStyle": "bold",
+              "padding": 0,
+              "fontColor": "rgba(0,0,0,0.6)"
+            },
+            "gridLines": {
+              "display": false
+            }
+          }
+        ]
+      },
+      "animation": {
+        "duration": 0
+      },
+      "legend": {
+        "display": true,
+        "labels": {
+          "fontColor": "#000080"
+        }
+      },
+      "responsive": true
+    },
+    "voltageResolutionMap": [
+      "50mV",
+      "500mV",
+      "5V"
+    ],
+    "maxDataPoints": 50,
+    "currentResolutionMap": [
+      "500uA",
+      "50mA"
+    ]
+  },
+  "deployment": {
+    "host": "localhost",
+    "apiPort": "8080",
+    "protocol": "http",
+    "apiLink": "/api"
+  }
+}
